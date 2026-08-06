@@ -38,15 +38,18 @@ fun FactoryWebView() {
                     javaScriptEnabled = true
                     domStorageEnabled = true
                     databaseEnabled = true
+                    allowFileAccess = true
+                    allowContentAccess = true
                     loadWithOverviewMode = true
                     useWideViewPort = true
                     mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                 }
                 webViewClient = WebViewClient()
-                loadUrl("https://ais-dev-kapymbe2wlipk7xdxjszpg-732840456225.europe-west2.run.app")
+                loadUrl("file:///android_asset/index.html")
             }
         },
         modifier = Modifier.fillMaxSize()
     )
 }
+
 
