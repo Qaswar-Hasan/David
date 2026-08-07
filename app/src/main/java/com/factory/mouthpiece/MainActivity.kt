@@ -37,6 +37,7 @@ fun FactoryWebView() {
     AndroidView(
         factory = { context ->
             val assetLoader = WebViewAssetLoader.Builder()
+                .setDomain("appassets.androidplatform.net")
                 .addPathHandler("/", WebViewAssetLoader.AssetsPathHandler(context))
                 .build()
 
@@ -54,6 +55,7 @@ fun FactoryWebView() {
                     loadWithOverviewMode = true
                     useWideViewPort = true
                     mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                    mediaPlaybackRequiresUserGesture = false
                 }
                 webChromeClient = android.webkit.WebChromeClient()
                 webViewClient = object : WebViewClient() {
@@ -61,7 +63,35 @@ fun FactoryWebView() {
                         view: WebView,
                         request: WebResourceRequest
                     ): WebResourceResponse? {
-                        return assetLoader.shouldInterceptRequest(request.url)
+                        val response = assetLoader.shouldInterceptRequest(request.url)
+                        if (response != null) {
+                            val headers = HashMap(response.responseHeaders ?: emptyMap())
+                            headers["Access-Control-Allow-Origin"] = "*"
+                            headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+                            headers["Access-Control-Allow-Headers"] = "*"
+                            return WebResourceResponse(
+                                response.mimeType,
+                                response.encoding,
+                                response.statusCode,
+                                response.reasonPhrase,
+                                headers,
+                                response.data
+                            )
+                        }
+                        return null
+                    }
+
+                    override fun onReceivedError(
+                        view: WebView?,
+                        errorCode: Int,
+                        description: String?,
+                        failingUrl: String?
+                    ) {
+                        super.onReceivedError(view, errorCode, description, failingUrl)
+                        // Fallback to direct file loading if domain loader fails
+                        if (failingUrl?.contains("appassets.androidplatform.net") == true) {
+                            view?.loadUrl("file:///android_asset/index.html")
+                        }
                     }
                 }
                 loadUrl("https://appassets.androidplatform.net/index.html")
@@ -70,6 +100,7 @@ fun FactoryWebView() {
         modifier = Modifier.fillMaxSize()
     )
 }
+
 
 
 

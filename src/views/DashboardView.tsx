@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { useFactory } from '../context/FactoryContext';
 import { StatCard } from '../components/StatCard';
 import {
@@ -10,8 +10,23 @@ import {
   Layers,
   Sparkles,
   TrendingUp,
+  BarChart2,
+  BarChart3,
+  LineChart as LineChartIcon,
 } from 'lucide-react';
 import { TabType } from '../components/Sidebar';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  AreaChart,
+  Area,
+} from 'recharts';
 
 interface DashboardViewProps {
   onNavigate: (tab: TabType) => void;
@@ -19,8 +34,79 @@ interface DashboardViewProps {
 
 export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
   const { analyticsState, injectionRecords, autoPackagingRecords, manualPackagingRecords } = useFactory();
+  const [chartType, setChartType] = useState<'bar' | 'area'>('bar');
 
   const totalFinishedOutputKg = analyticsState.totalInjectionFinishedKg + analyticsState.totalAutoPackKg;
+
+  // Aggregate daily production by date
+  const dailyData = useMemo(() => {
+    const dateMap: Record<
+      string,
+      {
+        date: string;
+        displayDate: string;
+        injectionKg: number;
+        autoPackKg: number;
+        manualPackKg: number;
+      }
+    > = {};
+
+    // Seed with last 7 days
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      const displayDate = d.toLocaleDateString('ar-EG', { month: 'short', day: 'numeric' });
+      dateMap[dateStr] = {
+        date: dateStr,
+        displayDate,
+        injectionKg: 0,
+        autoPackKg: 0,
+        manualPackKg: 0,
+      };
+    }
+
+    // Add injection records
+    injectionRecords.forEach((r) => {
+      if (!dateMap[r.date]) {
+        const d = new Date(r.date);
+        const displayDate = isNaN(d.getTime()) ? r.date : d.toLocaleDateString('ar-EG', { month: 'short', day: 'numeric' });
+        dateMap[r.date] = { date: r.date, displayDate, injectionKg: 0, autoPackKg: 0, manualPackKg: 0 };
+      }
+      dateMap[r.date].injectionKg += r.finishedMouthpiecesWeightKg;
+    });
+
+    // Add auto packaging records
+    autoPackagingRecords.forEach((r) => {
+      if (!dateMap[r.date]) {
+        const d = new Date(r.date);
+        const displayDate = isNaN(d.getTime()) ? r.date : d.toLocaleDateString('ar-EG', { month: 'short', day: 'numeric' });
+        dateMap[r.date] = { date: r.date, displayDate, injectionKg: 0, autoPackKg: 0, manualPackKg: 0 };
+      }
+      dateMap[r.date].autoPackKg += r.netShiftWeightKg;
+    });
+
+    // Add manual packaging records
+    manualPackagingRecords.forEach((r) => {
+      if (!dateMap[r.date]) {
+        const d = new Date(r.date);
+        const displayDate = isNaN(d.getTime()) ? r.date : d.toLocaleDateString('ar-EG', { month: 'short', day: 'numeric' });
+        dateMap[r.date] = { date: r.date, displayDate, injectionKg: 0, autoPackKg: 0, manualPackKg: 0 };
+      }
+      dateMap[r.date].manualPackKg += r.netMouthpiecesWeightKg;
+    });
+
+    return Object.values(dateMap)
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .map((item) => ({
+        displayDate: item.displayDate,
+        'حقن (كغ)': Number(item.injectionKg.toFixed(1)),
+        'تغليف آلي (كغ)': Number(item.autoPackKg.toFixed(1)),
+        'تعبئة يدوية (كغ)': Number(item.manualPackKg.toFixed(1)),
+        'الإجمالي (كغ)': Number((item.injectionKg + item.autoPackKg + item.manualPackKg).toFixed(1)),
+      }));
+  }, [injectionRecords, autoPackagingRecords, manualPackagingRecords]);
 
   return (
     <div className="space-y-6 pb-12">
@@ -150,6 +236,160 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
           iconBgColor="bg-amber-50"
           iconTextColor="text-amber-600"
         />
+      </div>
+
+      {/* Daily Production Recharts Chart Section */}
+      <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+          <div className="space-y-1">
+            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <BarChart2 className="w-5 h-5 text-indigo-600" />
+              مخطط إجمالي الإنتاج اليومي للمباسم (بالكجم)
+            </h3>
+            <p className="text-xs text-slate-500 font-medium">
+              توزيع الكميات الصافية المسجلة يومياً عبر أقسام المصنع المختلفة
+            </p>
+          </div>
+
+          <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl shrink-0 self-start sm:self-auto">
+            <button
+              onClick={() => setChartType('bar')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+                chartType === 'bar'
+                  ? 'bg-white text-indigo-600 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <BarChart3 className="w-3.5 h-3.5" />
+              <span>أعمدة</span>
+            </button>
+            <button
+              onClick={() => setChartType('area')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+                chartType === 'area'
+                  ? 'bg-white text-indigo-600 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <LineChartIcon className="w-3.5 h-3.5" />
+              <span>مساحة متصلة</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Chart Container */}
+        <div className="h-[320px] w-full pt-2">
+          <ResponsiveContainer width="100%" height="100%">
+            {chartType === 'bar' ? (
+              <BarChart data={dailyData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis
+                  dataKey="displayDate"
+                  tick={{ fontSize: 11, fill: '#64748b', fontWeight: 600 }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fontSize: 11, fill: '#64748b' }}
+                  axisLine={false}
+                  tickLine={false}
+                  unit=" كغ"
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#ffffff',
+                    borderRadius: '16px',
+                    borderColor: '#e2e8f0',
+                    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
+                    direction: 'rtl',
+                    textAlign: 'right',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                  }}
+                  formatter={(value: number) => [`${value} كجم`, '']}
+                />
+                <Legend
+                  wrapperStyle={{ paddingTop: '12px', fontSize: '12px', fontWeight: 600 }}
+                  iconType="circle"
+                />
+                <Bar dataKey="حقن (كغ)" fill="#4f46e5" radius={[6, 6, 0, 0]} maxBarSize={40} />
+                <Bar dataKey="تغليف آلي (كغ)" fill="#10b981" radius={[6, 6, 0, 0]} maxBarSize={40} />
+                <Bar dataKey="تعبئة يدوية (كغ)" fill="#f59e0b" radius={[6, 6, 0, 0]} maxBarSize={40} />
+              </BarChart>
+            ) : (
+              <AreaChart data={dailyData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorInj" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#4f46e5" stopOpacity={0.05} />
+                  </linearGradient>
+                  <linearGradient id="colorAuto" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0.05} />
+                  </linearGradient>
+                  <linearGradient id="colorManual" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.05} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis
+                  dataKey="displayDate"
+                  tick={{ fontSize: 11, fill: '#64748b', fontWeight: 600 }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fontSize: 11, fill: '#64748b' }}
+                  axisLine={false}
+                  tickLine={false}
+                  unit=" كغ"
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#ffffff',
+                    borderRadius: '16px',
+                    borderColor: '#e2e8f0',
+                    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
+                    direction: 'rtl',
+                    textAlign: 'right',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                  }}
+                  formatter={(value: number) => [`${value} كجم`, '']}
+                />
+                <Legend
+                  wrapperStyle={{ paddingTop: '12px', fontSize: '12px', fontWeight: 600 }}
+                  iconType="circle"
+                />
+                <Area
+                  type="monotone"
+                  dataKey="حقن (كغ)"
+                  stroke="#4f46e5"
+                  strokeWidth={2}
+                  fillOpacity={1}
+                  fill="url(#colorInj)"
+                />
+                <Area
+                  type="monotone"
+                  dataKey="تغليف آلي (كغ)"
+                  stroke="#10b981"
+                  strokeWidth={2}
+                  fillOpacity={1}
+                  fill="url(#colorAuto)"
+                />
+                <Area
+                  type="monotone"
+                  dataKey="تعبئة يدوية (كغ)"
+                  stroke="#f59e0b"
+                  strokeWidth={2}
+                  fillOpacity={1}
+                  fill="url(#colorManual)"
+                />
+              </AreaChart>
+            )}
+          </ResponsiveContainer>
+        </div>
       </div>
 
       {/* Quick Admin & Reports Navigation Buttons */}
