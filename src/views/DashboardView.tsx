@@ -59,6 +59,26 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
 
   const totalFinishedOutputKg = analyticsState.totalInjectionFinishedKg + analyticsState.totalAutoPackKg;
 
+  // Custom helper for local date string YYYY-MM-DD
+  const formatLocalDateString = (d: Date) => {
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const getDisplayDate = (dateStr: string) => {
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[2], 10);
+      const d = new Date(year, month, day);
+      return d.toLocaleDateString('ar-EG', { month: 'short', day: 'numeric' });
+    }
+    return dateStr;
+  };
+
   // Aggregate daily production by date
   const dailyData = useMemo(() => {
     const dateMap: Record<
@@ -72,13 +92,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
       }
     > = {};
 
-    // Seed with last 7 days
+    // Seed with last 7 days using local dates
     const today = new Date();
+    const localToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
     for (let i = 6; i >= 0; i--) {
-      const d = new Date(today);
+      const d = new Date(localToday);
       d.setDate(d.getDate() - i);
-      const dateStr = d.toISOString().split('T')[0];
-      const displayDate = d.toLocaleDateString('ar-EG', { month: 'short', day: 'numeric' });
+      const dateStr = formatLocalDateString(d);
+      const displayDate = getDisplayDate(dateStr);
       dateMap[dateStr] = {
         date: dateStr,
         displayDate,
@@ -91,8 +113,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
     // Add injection records
     injectionRecords.forEach((r) => {
       if (!dateMap[r.date]) {
-        const d = new Date(r.date);
-        const displayDate = isNaN(d.getTime()) ? r.date : d.toLocaleDateString('ar-EG', { month: 'short', day: 'numeric' });
+        const displayDate = getDisplayDate(r.date);
         dateMap[r.date] = { date: r.date, displayDate, injectionKg: 0, autoPackKg: 0, manualPackKg: 0 };
       }
       dateMap[r.date].injectionKg += r.finishedMouthpiecesWeightKg;
@@ -101,8 +122,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
     // Add auto packaging records
     autoPackagingRecords.forEach((r) => {
       if (!dateMap[r.date]) {
-        const d = new Date(r.date);
-        const displayDate = isNaN(d.getTime()) ? r.date : d.toLocaleDateString('ar-EG', { month: 'short', day: 'numeric' });
+        const displayDate = getDisplayDate(r.date);
         dateMap[r.date] = { date: r.date, displayDate, injectionKg: 0, autoPackKg: 0, manualPackKg: 0 };
       }
       dateMap[r.date].autoPackKg += r.netShiftWeightKg;
@@ -111,8 +131,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
     // Add manual packaging records
     manualPackagingRecords.forEach((r) => {
       if (!dateMap[r.date]) {
-        const d = new Date(r.date);
-        const displayDate = isNaN(d.getTime()) ? r.date : d.toLocaleDateString('ar-EG', { month: 'short', day: 'numeric' });
+        const displayDate = getDisplayDate(r.date);
         dateMap[r.date] = { date: r.date, displayDate, injectionKg: 0, autoPackKg: 0, manualPackKg: 0 };
       }
       dateMap[r.date].manualPackKg += r.netMouthpiecesWeightKg;
@@ -306,7 +325,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis
                   dataKey="displayDate"
-                  tick={{ fontSize: 11, fill: '#475569', fontWeight: 600 }}
+                  interval={0}
+                  tick={{ fontSize: 10, fill: '#475569', fontWeight: 600 }}
                   axisLine={false}
                   tickLine={false}
                 />
@@ -345,7 +365,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis
                   dataKey="displayDate"
-                  tick={{ fontSize: 11, fill: '#475569', fontWeight: 600 }}
+                  interval={0}
+                  tick={{ fontSize: 10, fill: '#475569', fontWeight: 600 }}
                   axisLine={false}
                   tickLine={false}
                 />
