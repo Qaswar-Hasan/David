@@ -9,6 +9,19 @@
   }
 }
 
+/* Recharts SVG layout alignment fixes for RTL / Android WebView */
+.recharts-wrapper,
+.recharts-wrapper * {
+  direction: ltr !important;
+}
+.recharts-legend-wrapper,
+.recharts-tooltip-wrapper {
+  direction: rtl !important;
+}
+.recharts-cartesian-axis-tick-value {
+  font-family: 'Cairo', system-ui, sans-serif !important;
+}
+
 /* Custom Scrollbars for clean design */
 ::-webkit-scrollbar {
   width: 6px;

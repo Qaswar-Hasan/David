@@ -11,8 +11,8 @@ android {
         applicationId = "com.factory.mouthpiece"
         minSdk = 24
         targetSdk = 34
-        versionCode = 20
-        versionName = "2.0"
+        versionCode = 25
+        versionName = "2.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

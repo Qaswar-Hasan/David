@@ -74,7 +74,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
       const month = parseInt(parts[1], 10) - 1;
       const day = parseInt(parts[2], 10);
       const d = new Date(year, month, day);
-      return d.toLocaleDateString('ar-EG', { month: 'short', day: 'numeric' });
+      const monthName = d.toLocaleDateString('ar-EG', { month: 'short' });
+      return `${day} ${monthName}`;
     }
     return dateStr;
   };
@@ -321,12 +322,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
         <div dir="ltr" className="h-[340px] w-full pt-2 [direction:ltr]">
           <ResponsiveContainer width="100%" height="100%">
             {chartType === 'bar' ? (
-              <BarChart data={dailyData} margin={{ top: 15, right: 15, left: 10, bottom: 5 }}>
+              <BarChart data={dailyData} margin={{ top: 15, right: 5, left: -15, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis
                   dataKey="displayDate"
                   interval={0}
-                  tick={{ fontSize: 10, fill: '#475569', fontWeight: 600 }}
+                  tick={{ fontSize: 9, fill: '#475569', fontWeight: 700 }}
                   axisLine={false}
                   tickLine={false}
                 />
@@ -334,7 +335,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
                   tick={{ fontSize: 10, fill: '#64748b', fontWeight: 600 }}
                   axisLine={false}
                   tickLine={false}
-                  width={45}
+                  width={38}
                   tickFormatter={(val) => (val >= 1000 ? `${(val / 1000).toFixed(0)}k` : `${val}`)}
                 />
                 <Tooltip content={<CustomChartTooltip />} />
@@ -342,12 +343,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
                   wrapperStyle={{ paddingTop: '16px', fontSize: '12px', fontWeight: 700 }}
                   iconType="circle"
                 />
-                <Bar dataKey="حقن (كغ)" fill="#4f46e5" radius={[6, 6, 0, 0]} maxBarSize={36} />
-                <Bar dataKey="تغليف آلي (كغ)" fill="#10b981" radius={[6, 6, 0, 0]} maxBarSize={36} />
-                <Bar dataKey="تعبئة يدوية (كغ)" fill="#f59e0b" radius={[6, 6, 0, 0]} maxBarSize={36} />
+                <Bar dataKey="حقن (كغ)" fill="#4f46e5" radius={[6, 6, 0, 0]} maxBarSize={32} />
+                <Bar dataKey="تغليف آلي (كغ)" fill="#10b981" radius={[6, 6, 0, 0]} maxBarSize={32} />
+                <Bar dataKey="تعبئة يدوية (كغ)" fill="#f59e0b" radius={[6, 6, 0, 0]} maxBarSize={32} />
               </BarChart>
             ) : (
-              <AreaChart data={dailyData} margin={{ top: 15, right: 15, left: 10, bottom: 5 }}>
+              <AreaChart data={dailyData} margin={{ top: 15, right: 5, left: -15, bottom: 5 }}>
                 <defs>
                   <linearGradient id="colorInj" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.8} />
@@ -366,7 +367,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
                 <XAxis
                   dataKey="displayDate"
                   interval={0}
-                  tick={{ fontSize: 10, fill: '#475569', fontWeight: 600 }}
+                  tick={{ fontSize: 9, fill: '#475569', fontWeight: 700 }}
                   axisLine={false}
                   tickLine={false}
                 />
@@ -374,7 +375,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
                   tick={{ fontSize: 10, fill: '#64748b', fontWeight: 600 }}
                   axisLine={false}
                   tickLine={false}
-                  width={45}
+                  width={38}
                   tickFormatter={(val) => (val >= 1000 ? `${(val / 1000).toFixed(0)}k` : `${val}`)}
                 />
                 <Tooltip content={<CustomChartTooltip />} />
