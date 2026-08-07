@@ -15,19 +15,19 @@ export const StatCard: React.FC<StatCardProps> = ({
   value,
   subtitle,
   icon: Icon,
-  iconBgColor = 'bg-indigo-50 text-indigo-600',
-  iconTextColor = 'text-indigo-600',
+  iconBgColor = 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400',
+  iconTextColor = 'text-indigo-600 dark:text-indigo-400',
 }) => {
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center justify-between transition-all hover:shadow-md">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 flex items-center justify-between transition-all hover:shadow-md">
       <div className="flex items-center gap-4">
         <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${iconBgColor}`}>
           <Icon className={`w-6 h-6 ${iconTextColor}`} />
         </div>
         <div>
-          <h4 className="text-xs font-semibold text-slate-500 mb-0.5">{title}</h4>
-          <div className="text-lg font-bold text-slate-900 leading-tight">{value}</div>
-          <p className="text-xs text-slate-400 mt-0.5 font-medium">{subtitle}</p>
+          <h4 className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-0.5">{title}</h4>
+          <div className="text-lg font-bold text-slate-900 dark:text-white leading-tight">{value}</div>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5 font-medium">{subtitle}</p>
         </div>
       </div>
     </div>

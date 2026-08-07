@@ -21,6 +21,10 @@ import {
   Send,
   Smartphone,
   Loader2,
+  Eye,
+  X,
+  FolderDown,
+  FileText,
 } from 'lucide-react';
 
 export const ReportsView: React.FC = () => {
@@ -29,6 +33,12 @@ export const ReportsView: React.FC = () => {
   const [copied, setCopied] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [shareSuccess, setShareSuccess] = useState<string | null>(null);
+
+  // PDF Preview & File Sharing State
+  const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null);
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [showLocationInfo, setShowLocationInfo] = useState(false);
 
   const currentDate = new Date().toLocaleDateString('ar-EG', {
     weekday: 'long',
@@ -39,67 +49,133 @@ export const ReportsView: React.FC = () => {
 
   const reportId = `REP-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}`;
 
-  // Direct PDF File Generation via html2canvas & jsPDF with multi-page slicing
-  const handleDownloadPdf = async () => {
+  // Helper function to build PDF instance
+  const generatePdfInstance = async () => {
     const element = document.getElementById('printable-report-sheet');
-    if (!element) {
-      return;
-    }
+    if (!element) return null;
 
-    try {
-      setIsGeneratingPdf(true);
-      window.scrollTo(0, 0);
+    window.scrollTo(0, 0);
 
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff',
-        windowWidth: 1200,
-        scrollX: 0,
-        scrollY: 0,
-        onclone: (clonedDoc) => {
-          const el = clonedDoc.getElementById('printable-report-sheet');
-          if (el) {
-            el.style.letterSpacing = 'normal';
-            el.style.wordSpacing = 'normal';
-            const allNodes = el.querySelectorAll('*');
-            allNodes.forEach((node) => {
-              const htmlNode = node as HTMLElement;
-              htmlNode.style.letterSpacing = 'normal';
-              htmlNode.style.wordSpacing = 'normal';
-            });
-          }
-        },
-      });
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff',
+      windowWidth: 1200,
+      scrollX: 0,
+      scrollY: 0,
+      onclone: (clonedDoc) => {
+        const el = clonedDoc.getElementById('printable-report-sheet');
+        if (el) {
+          el.style.letterSpacing = 'normal';
+          el.style.wordSpacing = 'normal';
+          const allNodes = el.querySelectorAll('*');
+          allNodes.forEach((node) => {
+            const htmlNode = node as HTMLElement;
+            htmlNode.style.letterSpacing = 'normal';
+            htmlNode.style.wordSpacing = 'normal';
+          });
+        }
+      },
+    });
 
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'mm', 'a4');
 
-      const imgWidth = 210; // A4 width in mm
-      const pageHeight = 297; // A4 height in mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-      let position = 0;
+    const imgWidth = 210; // A4 width in mm
+    const pageHeight = 297; // A4 height in mm
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    let heightLeft = imgHeight;
+    let position = 0;
 
-      // Add First Page
+    // Add First Page
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+    heightLeft -= pageHeight;
+
+    // Loop to add subsequent pages if report exceeds 1 A4 page length
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
       pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
       heightLeft -= pageHeight;
+    }
 
-      // Loop to add subsequent pages if report exceeds 1 A4 page length
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
-        heightLeft -= pageHeight;
+    const fileName = `تقرير_مصنع_المباسم_${new Date().toISOString().split('T')[0]}.pdf`;
+    const blob = pdf.output('blob');
+    const file = new File([blob], fileName, { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+
+    setPdfBlobUrl(url);
+    setPdfFile(file);
+
+    return { pdf, url, file, fileName };
+  };
+
+  // Direct PDF Download
+  const handleDownloadPdf = async () => {
+    try {
+      setIsGeneratingPdf(true);
+      const res = await generatePdfInstance();
+      if (res) {
+        res.pdf.save(res.fileName);
+        setShowLocationInfo(true);
+        setShareSuccess('تم تحميل الملف بنجاح! تجده في مجلد (التنزيلات Downloads) على هاتفك');
+        setTimeout(() => setShareSuccess(null), 4000);
       }
-
-      pdf.save(`تقرير_مصنع_المباسم_مبسمك_عندي_${new Date().toISOString().split('T')[0]}.pdf`);
-      
-      setShareSuccess('تم تحميل ملف PDF المكتمل بنجاح');
-      setTimeout(() => setShareSuccess(null), 3000);
     } catch (err) {
       console.error('PDF Generation error:', err);
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
+
+  // Open Preview Modal
+  const handlePreviewPdf = async () => {
+    try {
+      setIsGeneratingPdf(true);
+      if (!pdfBlobUrl) {
+        await generatePdfInstance();
+      }
+      setIsPreviewOpen(true);
+    } catch (err) {
+      console.error('PDF Preview error:', err);
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
+
+  // Share PDF File directly via Web Share API
+  const handleSharePdfFile = async () => {
+    try {
+      setIsGeneratingPdf(true);
+      let targetFile = pdfFile;
+      if (!targetFile) {
+        const res = await generatePdfInstance();
+        targetFile = res?.file || null;
+      }
+
+      if (targetFile && navigator.canShare && navigator.canShare({ files: [targetFile] })) {
+        await navigator.share({
+          title: 'تقرير مصنع المباسم البلاستيكية - مبسمك عندي',
+          text: 'مرفق تقرير الإنتاج والمتابعة الموحد لمصنع المباسم البلاستيكية.',
+          files: [targetFile],
+        });
+        setShareSuccess('تمت مشاركة ملف الـ PDF بنجاح!');
+        setTimeout(() => setShareSuccess(null), 3000);
+      } else if (navigator.share) {
+        await navigator.share({
+          title: 'تقرير مصنع المباسم - مبسمك عندي',
+          text: generateFormattedArabicReport(),
+        });
+        setShareSuccess('تمت مشاركة ملخص التقرير بنجاح!');
+        setTimeout(() => setShareSuccess(null), 3000);
+      } else {
+        setIsPreviewOpen(true);
+        setShareSuccess('تم فتح معاينة الملف للمشاركة والتحميل');
+        setTimeout(() => setShareSuccess(null), 3000);
+      }
+    } catch (err) {
+      console.log('Share canceled or not supported:', err);
     } finally {
       setIsGeneratingPdf(false);
     }
@@ -143,7 +219,6 @@ export const ReportsView: React.FC = () => {
         // user cancelled or share failed
       }
     }
-    // Fallback URL for Messenger / Web
     const url = `https://www.facebook.com/dialog/send?link=${encodeURIComponent(window.location.href)}&app_id=291494419107518&redirect_uri=${encodeURIComponent(window.location.href)}`;
     window.open(url, '_blank');
   };
@@ -169,22 +244,22 @@ export const ReportsView: React.FC = () => {
     <div className="space-y-6 pb-16 max-w-5xl mx-auto">
       {/* Notification toast */}
       {shareSuccess && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-2 text-sm font-bold animate-bounce">
-          <Check className="w-5 h-5 text-emerald-400" />
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-2 text-xs sm:text-sm font-bold animate-bounce text-center max-w-[90vw]">
+          <Check className="w-5 h-5 text-emerald-400 shrink-0" />
           <span>{shareSuccess}</span>
         </div>
       )}
 
       {/* Top Controls Toolbar (Hidden during print) */}
-      <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs space-y-5 no-print">
+      <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-5 no-print transition-colors">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 to-indigo-700 text-white flex items-center justify-center font-bold shadow-sm shrink-0">
               <FileBarChart2 className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-extrabold text-slate-900">صفحة التقارير والطباعة الرسمية</h2>
-              <p className="text-xs text-slate-500 font-medium">مبسمك عندي - تصدير تقارير الإنتاج والمشاركة الفورية</p>
+              <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">صفحة التقارير والطباعة الرسمية</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">مبسمك عندي - تصدير تقارير الإنتاج والمشاركة الفورية</p>
             </div>
           </div>
 
@@ -193,12 +268,12 @@ export const ReportsView: React.FC = () => {
             <button
               onClick={handleDownloadPdf}
               disabled={isGeneratingPdf}
-              className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 shadow-md shadow-emerald-200 transition-all hover:scale-[1.02] disabled:opacity-60"
+              className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 shadow-md shadow-emerald-200 dark:shadow-none transition-all hover:scale-[1.02] disabled:opacity-60"
             >
               {isGeneratingPdf ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>جاري إنشاء PDF...</span>
+                  <span>جاري معالجة PDF...</span>
                 </>
               ) : (
                 <>
@@ -208,17 +283,64 @@ export const ReportsView: React.FC = () => {
               )}
             </button>
 
+            {/* Preview PDF Button */}
+            <button
+              onClick={handlePreviewPdf}
+              disabled={isGeneratingPdf}
+              className="px-4 py-2.5 bg-indigo-50 dark:bg-indigo-950/80 hover:bg-indigo-100 dark:hover:bg-indigo-900/80 active:bg-indigo-200 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all hover:scale-[1.02] disabled:opacity-60"
+            >
+              <Eye className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              <span>معاينة التقرير</span>
+            </button>
+
+            {/* Direct Share PDF File Button */}
+            <button
+              onClick={handleSharePdfFile}
+              disabled={isGeneratingPdf}
+              className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 shadow-md shadow-indigo-200 dark:shadow-none transition-all hover:scale-[1.02] disabled:opacity-60"
+            >
+              <Share2 className="w-4 h-4" />
+              <span>مشاركة ملف PDF</span>
+            </button>
+
             {/* Copy Text Button */}
             <button
               onClick={handleCopyText}
-              className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors"
+              className="px-3.5 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors"
               title="نسخ نص التقرير"
             >
-              {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-slate-500" />}
+              {copied ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <Copy className="w-4 h-4 text-slate-500 dark:text-slate-400" />}
               <span>{copied ? 'تم النسخ' : 'نسخ النص'}</span>
             </button>
           </div>
         </div>
+
+        {/* Location Info Banner */}
+        {showLocationInfo && (
+          <div className="bg-amber-50 border border-amber-200/90 rounded-2xl p-4 text-xs font-bold text-amber-900 flex items-start justify-between gap-3 shadow-xs animate-in fade-in">
+            <div className="flex items-start gap-2.5">
+              <div className="p-2 bg-amber-100 rounded-xl shrink-0 text-amber-700">
+                <FolderDown className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-extrabold text-amber-950">أين يوجد ملف الـ PDF بعد التحميل؟</p>
+                <p className="mt-1 text-xs text-amber-800 font-medium leading-relaxed">
+                  تجد الملف المُحمل داخل مجلد <span className="font-bold underline text-amber-950">التنزيلات (Downloads)</span> في مدير الملفات على هاتفك باسم 
+                  <span className="font-mono dir-ltr inline-block px-1.5 py-0.5 bg-amber-100/80 rounded mx-1 text-amber-900 font-bold">
+                    تقرير_مصنع_المباسم_...pdf
+                  </span>.
+                  يمكنك أيضاً معاينته مباشرة أو مشاركته كملف مستند عبر الأزرار أعلاه.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowLocationInfo(false)}
+              className="p-1 text-amber-600 hover:text-amber-800 rounded-lg shrink-0"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
 
         {/* Social Share Bar */}
         <div className="pt-4 border-t border-slate-100 space-y-3">
@@ -528,6 +650,85 @@ export const ReportsView: React.FC = () => {
           </span>
         </div>
       </div>
+
+      {/* Interactive PDF Preview Modal */}
+      {isPreviewOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-in fade-in no-print">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden dir-rtl">
+            {/* Modal Header */}
+            <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/80">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold">
+                  <Eye className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-slate-900 dark:text-white text-base sm:text-lg">معاينة تقرير PDF الرسمي</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">مصنع المباسم البلاستيكية - مبسمك عندي</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {pdfBlobUrl && (
+                  <a
+                    href={pdfBlobUrl}
+                    download={pdfFile?.name || 'تقرير_مصنع_المباسم.pdf'}
+                    className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span className="hidden sm:inline">تحميل الملف</span>
+                  </a>
+                )}
+                <button
+                  onClick={() => setIsPreviewOpen(false)}
+                  className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700 rounded-xl transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body / PDF Viewer */}
+            <div className="p-4 flex-1 overflow-y-auto bg-slate-100/80 dark:bg-slate-950/80 flex items-center justify-center min-h-[400px]">
+              {pdfBlobUrl ? (
+                <iframe
+                  src={pdfBlobUrl}
+                  className="w-full h-[65vh] rounded-2xl border border-slate-300 dark:border-slate-700 shadow-md bg-white"
+                  title="معاينة التقرير"
+                />
+              ) : (
+                <div className="p-8 text-center space-y-3">
+                  <Loader2 className="w-8 h-8 text-indigo-600 dark:text-indigo-400 animate-spin mx-auto" />
+                  <p className="text-sm font-bold text-slate-700 dark:text-slate-300">جاري معالجة إعداد معاينة الملف...</p>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-wrap items-center justify-between gap-3">
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                💡 يتم حفظ الملف مباشرة في مجلد (التنزيلات Downloads) عند الضغط على زر التحميل.
+              </p>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleSharePdfFile}
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs"
+                >
+                  <Share2 className="w-4 h-4" />
+                  <span>مشاركة الملف الآن</span>
+                </button>
+
+                <button
+                  onClick={() => setIsPreviewOpen(false)}
+                  className="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-colors"
+                >
+                  إغلاق
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

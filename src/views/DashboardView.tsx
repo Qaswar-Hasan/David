@@ -211,57 +211,57 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
 
       {/* Quick Module Navigation Cards */}
       <div className="space-y-3">
-        <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-indigo-600" />
+        <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
           أقسام الإنتاج والتسجيل المباشر
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <button
             onClick={() => onNavigate('injection')}
-            className="text-right p-5 rounded-2xl bg-white border border-slate-200/80 hover:border-indigo-400 shadow-sm hover:shadow-md transition-all group flex flex-col justify-between"
+            className="text-right p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-500 shadow-sm hover:shadow-md transition-all group flex flex-col justify-between"
           >
             <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Factory className="w-5 h-5" />
               </div>
-              <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full">Module A</span>
+              <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/80 px-2.5 py-1 rounded-full">Module A</span>
             </div>
             <div>
-              <h4 className="font-bold text-slate-900 text-base mb-1">قسم الحقن</h4>
-              <p className="text-xs text-slate-500 font-medium">وزن المواد الأولية والخرج والهدر</p>
+              <h4 className="font-bold text-slate-900 dark:text-white text-base mb-1">قسم الحقن</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">وزن المواد الأولية والخرج والهدر</p>
             </div>
           </button>
 
           <button
             onClick={() => onNavigate('autoPackaging')}
-            className="text-right p-5 rounded-2xl bg-white border border-slate-200/80 hover:border-emerald-400 shadow-sm hover:shadow-md transition-all group flex flex-col justify-between"
+            className="text-right p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-emerald-400 dark:hover:border-emerald-500 shadow-sm hover:shadow-md transition-all group flex flex-col justify-between"
           >
             <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Gauge className="w-5 h-5" />
               </div>
-              <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">Module B</span>
+              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/80 px-2.5 py-1 rounded-full">Module B</span>
             </div>
             <div>
-              <h4 className="font-bold text-slate-900 text-base mb-1">التغليف الآلي</h4>
-              <p className="text-xs text-slate-500 font-medium">الأوزان التراكمية وتعيين العمال</p>
+              <h4 className="font-bold text-slate-900 dark:text-white text-base mb-1">التغليف الآلي</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">الأوزان التراكمية وتعيين العمال</p>
             </div>
           </button>
 
           <button
             onClick={() => onNavigate('manualPackaging')}
-            className="text-right p-5 rounded-2xl bg-white border border-slate-200/80 hover:border-amber-400 shadow-sm hover:shadow-md transition-all group flex flex-col justify-between"
+            className="text-right p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-amber-400 dark:hover:border-amber-500 shadow-sm hover:shadow-md transition-all group flex flex-col justify-between"
           >
             <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <ShoppingBag className="w-5 h-5" />
               </div>
-              <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full">Module C</span>
+              <span className="text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/80 px-2.5 py-1 rounded-full">Module C</span>
             </div>
             <div>
-              <h4 className="font-bold text-slate-900 text-base mb-1">تعبئة 40 مبسم</h4>
-              <p className="text-xs text-slate-500 font-medium">تصنيف وحسابات العملاء (خليل، يحيى)</p>
+              <h4 className="font-bold text-slate-900 dark:text-white text-base mb-1">تعبئة 40 مبسم</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">تصنيف وحسابات العملاء (خليل، يحيى)</p>
             </div>
           </button>
         </div>
@@ -274,8 +274,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
           value={`${analyticsState.totalInjectionRawKg.toFixed(1)} كغ`}
           subtitle={`الهدر الصافي: ${analyticsState.totalInjectionWasteKg.toFixed(1)} كغ`}
           icon={Layers}
-          iconBgColor="bg-indigo-50"
-          iconTextColor="text-indigo-600"
+          iconBgColor="bg-indigo-50 dark:bg-indigo-950/80"
+          iconTextColor="text-indigo-600 dark:text-indigo-400"
         />
 
         <StatCard
@@ -283,8 +283,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
           value={`${analyticsState.totalAutoPackKg.toFixed(1)} كغ`}
           subtitle="سجلات الورديات التراكمية"
           icon={Gauge}
-          iconBgColor="bg-emerald-50"
-          iconTextColor="text-emerald-600"
+          iconBgColor="bg-emerald-50 dark:bg-emerald-950/80"
+          iconTextColor="text-emerald-600 dark:text-emerald-400"
         />
 
         <StatCard
@@ -292,31 +292,31 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
           value={`${analyticsState.totalManualBagsCount} كيس (${analyticsState.totalManualMouthpiecesCount} مبسم)`}
           subtitle={`صافي الوزن: ${analyticsState.totalManualPackKg.toFixed(1)} كغ`}
           icon={ShoppingBag}
-          iconBgColor="bg-amber-50"
-          iconTextColor="text-amber-600"
+          iconBgColor="bg-amber-50 dark:bg-amber-950/80"
+          iconTextColor="text-amber-600 dark:text-amber-400"
         />
       </div>
 
       {/* Daily Production Recharts Chart Section */}
-      <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
           <div className="space-y-1">
-            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-              <BarChart2 className="w-5 h-5 text-indigo-600" />
+            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <BarChart2 className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
               مخطط إجمالي الإنتاج اليومي للمباسم (بالكجم)
             </h3>
-            <p className="text-xs text-slate-500 font-medium">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
               توزيع الكميات الصافية المسجلة يومياً عبر أقسام المصنع المختلفة
             </p>
           </div>
 
-          <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl shrink-0 self-start sm:self-auto">
+          <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl shrink-0 self-start sm:self-auto">
             <button
               onClick={() => setChartType('bar')}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
                 chartType === 'bar'
-                  ? 'bg-white text-indigo-600 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <BarChart3 className="w-3.5 h-3.5" />
@@ -326,8 +326,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
               onClick={() => setChartType('area')}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
                 chartType === 'area'
-                  ? 'bg-white text-indigo-600 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <LineChartIcon className="w-3.5 h-3.5" />
@@ -340,15 +340,19 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
         <div dir="ltr" className="h-[340px] w-full pt-2">
           <ResponsiveContainer width="100%" height="100%">
             {chartType === 'bar' ? (
-              <BarChart data={dailyData} margin={{ top: 15, right: 20, left: 0, bottom: 15 }}>
+              <BarChart data={dailyData} margin={{ top: 15, right: 20, left: 0, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis
                   dataKey="displayDate"
+                  reversed={true}
                   interval={0}
-                  tick={{ fontSize: 11, fill: '#334155', fontWeight: 700 }}
+                  angle={-15}
+                  textAnchor="end"
+                  height={45}
+                  tick={{ fontSize: 10, fill: '#334155', fontWeight: 700 }}
                   axisLine={false}
                   tickLine={false}
-                  dy={6}
+                  dy={4}
                 />
                 <YAxis
                   tick={{ fontSize: 10, fill: '#64748b', fontWeight: 600 }}
@@ -367,7 +371,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
                 <Bar dataKey="تعبئة يدوية (كغ)" fill="#f59e0b" radius={[6, 6, 0, 0]} maxBarSize={32} />
               </BarChart>
             ) : (
-              <AreaChart data={dailyData} margin={{ top: 15, right: 20, left: 0, bottom: 15 }}>
+              <AreaChart data={dailyData} margin={{ top: 15, right: 20, left: 0, bottom: 20 }}>
                 <defs>
                   <linearGradient id="colorInj" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.8} />
@@ -385,11 +389,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis
                   dataKey="displayDate"
+                  reversed={true}
                   interval={0}
-                  tick={{ fontSize: 11, fill: '#334155', fontWeight: 700 }}
+                  angle={-15}
+                  textAnchor="end"
+                  height={45}
+                  tick={{ fontSize: 10, fill: '#334155', fontWeight: 700 }}
                   axisLine={false}
                   tickLine={false}
-                  dy={6}
+                  dy={4}
                 />
                 <YAxis
                   tick={{ fontSize: 10, fill: '#64748b', fontWeight: 600 }}
@@ -437,39 +445,39 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <button
           onClick={() => onNavigate('reports')}
-          className="p-4 rounded-2xl bg-white border border-slate-200/80 hover:bg-slate-50/80 text-right flex items-center gap-4 transition-all shadow-2xs"
+          className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:bg-slate-50/80 dark:hover:bg-slate-800/80 text-right flex items-center gap-4 transition-all shadow-2xs"
         >
-          <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+          <div className="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
             <FileBarChart2 className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="font-bold text-slate-900 text-sm">التقارير والإحصائيات الشاملة</h4>
-            <p className="text-xs text-slate-500 font-medium">تحليل أداء العملاء والهدر بالورديات</p>
+            <h4 className="font-bold text-slate-900 dark:text-white text-sm">التقارير والإحصائيات الشاملة</h4>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">تحليل أداء العملاء والهدر بالورديات</p>
           </div>
         </button>
 
         <button
           onClick={() => onNavigate('masterData')}
-          className="p-4 rounded-2xl bg-white border border-slate-200/80 hover:bg-slate-50/80 text-right flex items-center gap-4 transition-all shadow-2xs"
+          className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:bg-slate-50/80 dark:hover:bg-slate-800/80 text-right flex items-center gap-4 transition-all shadow-2xs"
         >
-          <div className="w-11 h-11 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
+          <div className="w-11 h-11 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0">
             <Database className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="font-bold text-slate-900 text-sm">البيانات الأساسية (Master Data)</h4>
-            <p className="text-xs text-slate-500 font-medium">إدارة العملاء والآلات والورديات والعمال</p>
+            <h4 className="font-bold text-slate-900 dark:text-white text-sm">البيانات الأساسية (Master Data)</h4>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">إدارة العملاء والآلات والورديات والعمال</p>
           </div>
         </button>
       </div>
 
       {/* Recent Activity Feed */}
-      <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-          <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-slate-500" />
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-slate-500 dark:text-slate-400" />
             آخر عمليات الإنتاج المسجلة
           </h3>
-          <span className="text-xs font-semibold text-slate-400">تحديث مباشر</span>
+          <span className="text-xs font-semibold text-slate-400 dark:text-slate-500">تحديث مباشر</span>
         </div>
 
         {injectionRecords.length === 0 && autoPackagingRecords.length === 0 && manualPackagingRecords.length === 0 ? (
@@ -482,19 +490,19 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
             {manualPackagingRecords.slice(0, 3).map((rec) => (
               <div
                 key={`manual-${rec.id}`}
-                className="p-4 rounded-2xl bg-slate-50/70 border border-slate-100 flex items-center justify-between gap-4 hover:bg-slate-50 transition-colors"
+                className="p-4 rounded-2xl bg-slate-50/70 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 flex items-center justify-between gap-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 rounded-md bg-amber-100 text-amber-800 text-xs font-bold">
+                    <span className="px-2.5 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 text-xs font-bold">
                       تعبئة يدوية
                     </span>
-                    <h4 className="font-bold text-slate-900 text-sm">{rec.clientName}</h4>
+                    <h4 className="font-bold text-slate-900 dark:text-white text-sm">{rec.clientName}</h4>
                   </div>
-                  <p className="text-xs text-slate-600 font-medium">
+                  <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
                     {rec.calculatedTotalBags} كيس ({rec.calculatedTotalMouthpieces} مبسم) — صافي: {rec.netMouthpiecesWeightKg.toFixed(2)} كغ
                   </p>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500">
                     {rec.shiftName} | العمال: {rec.workerNames} | {rec.date}
                   </p>
                 </div>
@@ -505,24 +513,24 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
             {injectionRecords.slice(0, 3).map((rec) => (
               <div
                 key={`inj-${rec.id}`}
-                className="p-4 rounded-2xl bg-slate-50/70 border border-slate-100 flex items-center justify-between gap-4 hover:bg-slate-50 transition-colors"
+                className="p-4 rounded-2xl bg-slate-50/70 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 flex items-center justify-between gap-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 rounded-md bg-indigo-100 text-indigo-800 text-xs font-bold">
+                    <span className="px-2.5 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-950/80 text-indigo-800 dark:text-indigo-300 text-xs font-bold">
                       حقن
                     </span>
-                    <h4 className="font-bold text-slate-900 text-sm">{rec.machineName}</h4>
+                    <h4 className="font-bold text-slate-900 dark:text-white text-sm">{rec.machineName}</h4>
                   </div>
-                  <p className="text-xs text-slate-600 font-medium">
+                  <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
                     خرج: {rec.finishedMouthpiecesWeightKg.toFixed(1)} كغ (كفاءة: {rec.yieldPercentage.toFixed(1)}%)
                   </p>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500">
                     {rec.shiftName} | المشغل: {rec.operatorName} | {rec.date}
                   </p>
                 </div>
 
-                <div className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-xl text-xs font-bold shrink-0">
+                <div className="bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 px-3 py-1 rounded-xl text-xs font-bold shrink-0">
                   {rec.yieldPercentage.toFixed(1)}%
                 </div>
               </div>

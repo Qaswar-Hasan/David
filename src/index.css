@@ -4,12 +4,65 @@
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 antialiased selection:bg-indigo-500 selection:text-white;
+    @apply bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased selection:bg-indigo-500 selection:text-white transition-colors duration-200;
     font-family: 'Cairo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 }
 
+/* UI UX Pro Max Ultra-Sharp Cyber Glowing Keyframes for Developer Badge */
+@keyframes sharp-neon-glow {
+  0%, 100% {
+    text-shadow: 
+      0 0 8px rgba(99, 102, 241, 0.9),
+      0 0 20px rgba(139, 92, 246, 0.7),
+      0 0 35px rgba(59, 130, 246, 0.5);
+    filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.8));
+    transform: scale(1);
+  }
+  50% {
+    text-shadow: 
+      0 0 15px rgba(192, 132, 252, 1),
+      0 0 30px rgba(129, 140, 248, 0.9),
+      0 0 55px rgba(59, 130, 246, 0.7);
+    filter: drop-shadow(0 0 22px rgba(168, 85, 247, 0.95));
+    transform: scale(1.02);
+  }
+}
+
+@keyframes laser-sweep {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pro-border-pulse {
+  0%, 100% {
+    border-color: rgba(129, 140, 248, 0.5);
+    box-shadow: 0 0 25px rgba(99, 102, 241, 0.25), inset 0 0 15px rgba(99, 102, 241, 0.15);
+  }
+  50% {
+    border-color: rgba(192, 132, 252, 0.8);
+    box-shadow: 0 0 40px rgba(168, 85, 247, 0.45), inset 0 0 25px rgba(168, 85, 247, 0.3);
+  }
+}
+
+.animate-sharp-pro-text {
+  background: linear-gradient(120deg, #ffffff 0%, #e2e8f0 30%, #818cf8 60%, #c084fc 80%, #ffffff 100%);
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: sharp-neon-glow 3s infinite ease-in-out, laser-sweep 5s linear infinite;
+}
+
+.cyber-pro-card {
+  animation: pro-border-pulse 3.5s infinite ease-in-out;
+}
+
 /* Recharts SVG layout alignment fixes for RTL / Android WebView */
+
 .recharts-wrapper,
 .recharts-wrapper svg,
 .recharts-surface,

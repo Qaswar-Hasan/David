@@ -39,89 +39,108 @@ export const AboutView: React.FC = () => {
       </div>
 
       {/* Developer Badge Card */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-lg space-y-6">
-        <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-          <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/90 dark:border-slate-800 shadow-lg space-y-6 transition-colors">
+        <div className="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
             <UserCheck className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-lg font-black text-slate-900">معلومات مطور التطبيق</h2>
-            <p className="text-xs text-slate-500 font-medium">Developer Information</p>
+            <h2 className="text-lg font-black text-slate-900 dark:text-white">معلومات مطور التطبيق</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Developer Information</p>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-indigo-50/80 via-purple-50/40 to-slate-50 p-6 rounded-2xl border border-indigo-100 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-4 text-center sm:text-right">
-            <div className="w-16 h-16 rounded-full bg-indigo-600 text-white flex items-center justify-center font-black text-2xl shadow-md ring-4 ring-indigo-100 shrink-0">
-              ق
-            </div>
-            <div>
-              <div className="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1 flex items-center justify-center sm:justify-start gap-1">
-                <Sparkles className="w-3.5 h-3.5" /> Developed By
+        <div className="relative overflow-hidden bg-slate-950 p-6 sm:p-8 rounded-2xl border border-indigo-500/40 cyber-pro-card flex flex-col sm:flex-row items-center justify-between gap-6 shadow-2xl">
+          {/* Animated Ambient Cyber Glow Backdrops */}
+          <div className="absolute -top-16 -right-16 w-56 h-56 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="relative z-10 flex items-center gap-5 text-center sm:text-right">
+            {/* Sharp Cyber Avatar Diamond */}
+            <div className="relative group shrink-0">
+              <div className="absolute -inset-1.5 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 blur-sm opacity-80 group-hover:opacity-100 transition duration-300"></div>
+              <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-slate-900 border border-indigo-400/50 text-indigo-300 flex items-center justify-center font-black text-2xl sm:text-3xl shadow-2xl backdrop-blur-md">
+                <Code2 className="w-8 h-8 sm:w-10 sm:h-10 text-indigo-400" />
               </div>
-              <h3 className="text-2xl font-black text-slate-900">قسورة حسن</h3>
-              <p className="text-xs text-slate-600 font-bold mt-1">QASWARA HASAN</p>
+            </div>
+
+            <div className="space-y-1">
+              <div className="text-[11px] font-black text-indigo-400 uppercase tracking-widest flex items-center justify-center sm:justify-start gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-indigo-400 animate-spin" /> Lead Software Architect & Developer
+              </div>
+              
+              {/* Ultra Sharp Pro Max Typography */}
+              <h3 className="text-3xl sm:text-4xl font-black text-white tracking-tight animate-sharp-pro-text py-1 leading-none font-sans">
+                قسورة حسن
+              </h3>
+              
+              <div className="pt-1">
+                <span className="text-xs font-black text-indigo-300 tracking-[0.2em] dir-ltr inline-block bg-slate-900/90 px-3.5 py-1.5 rounded-lg border border-indigo-500/40 shadow-inner">
+                  QASWARA HASAN
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="bg-white px-5 py-3 rounded-2xl border border-slate-200 shadow-xs text-center sm:text-left">
-            <span className="text-[11px] font-bold text-slate-400 block uppercase">حقوق التطبيق والتطوير</span>
-            <span className="text-xs font-black text-slate-800 dir-ltr block mt-0.5">
+          <div className="relative z-10 bg-slate-900/90 px-6 py-4 rounded-xl border border-indigo-500/30 shadow-xl text-center sm:text-left backdrop-blur-md shrink-0">
+            <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-widest">حقوق التطوير والملكية</span>
+            <span className="text-xs font-extrabold text-indigo-300 dir-ltr block mt-1 tracking-wider">
               Developed by QASWARA HASAN
             </span>
           </div>
         </div>
       </div>
 
+
       {/* Application Features Overview */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
-        <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-6 transition-colors">
+        <div className="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
             <Code2 className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-lg font-black text-slate-900">عن تطبيق مصنع المباسم (مبسمك عندي)</h2>
-            <p className="text-xs text-slate-500 font-medium">خصائص مميزات وأقسام النظام</p>
+            <h2 className="text-lg font-black text-slate-900 dark:text-white">عن تطبيق مصنع المباسم (مبسمك عندي)</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">خصائص مميزات وأقسام النظام</p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
-            <div className="flex items-center gap-2 font-bold text-slate-900 text-sm">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 space-y-2">
+            <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-white text-sm">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               قسم الحقن (Module A)
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
               تسجيل خامات الحقن وتحديد الوزن النهائي والمخلفات مع حساب مؤشر الكفاءة الإنتاجية آلياً لكل آلة ووردية.
             </p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
-            <div className="flex items-center gap-2 font-bold text-slate-900 text-sm">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 space-y-2">
+            <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-white text-sm">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               التغليف الآلي (Module B)
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
               حساب الفرق التراكمي في أوزان التغليف الآلي للورديات وضمان الدقة والشفافية التامة.
             </p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
-            <div className="flex items-center gap-2 font-bold text-slate-900 text-sm">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 space-y-2">
+            <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-white text-sm">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               التعبئة اليدوية (Module C)
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
               تتبع أكياس العملاء (40 مبسم لكل كيس)، وطرح وزن تار الكيس وتصنيف المنتجات حسب نوع العميل ومحاسبتهم بدقة.
             </p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
-            <div className="flex items-center gap-2 font-bold text-slate-900 text-sm">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 space-y-2">
+            <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-white text-sm">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               التقارير الموحدة والطباعة
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
               تصدير تقارير رسمية منسقة جاهزة للطباعة والتنزيل كملفات PDF أو المشاركة النصية الفورية.
             </p>
           </div>
@@ -129,10 +148,11 @@ export const AboutView: React.FC = () => {
       </div>
 
       {/* Footer copyright */}
-      <div className="text-center py-4 text-xs font-semibold text-slate-500 space-y-1">
+      <div className="text-center py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 space-y-1">
         <div>جميع الحقوق محفوظة © {new Date().getFullYear()} - مصنع المباسم البلاستيكية</div>
-        <div className="font-bold text-indigo-600">Developed by QASWARA HASAN</div>
+        <div className="font-bold text-indigo-600 dark:text-indigo-400">Developed by QASWARA HASAN</div>
       </div>
+
     </div>
   );
 };

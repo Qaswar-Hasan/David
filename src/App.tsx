@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FactoryProvider, useFactory } from './context/FactoryContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { Header } from './components/Header';
 import { Sidebar, TabType } from './components/Sidebar';
 import { ReportShareModal } from './components/ReportShareModal';
@@ -29,7 +30,7 @@ const MainContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans dir-rtl">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans dir-rtl transition-colors duration-200">
       {/* Top Header Bar */}
       <Header
         onToggleSidebar={() => setIsSidebarOpenMobile((prev) => !prev)}
@@ -69,11 +70,11 @@ const MainContent: React.FC = () => {
       </div>
 
       {/* Global App Footer */}
-      <footer className="mt-auto py-5 border-t border-slate-200/80 bg-white text-center text-xs text-slate-500 font-medium no-print">
+      <footer className="mt-auto py-5 border-t border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 text-center text-xs text-slate-500 dark:text-slate-400 font-medium no-print transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div>مبسمك عندي - نظام إدارة مصنع المباسم البلاستيكية © {new Date().getFullYear()}</div>
-          <div className="font-semibold text-slate-700 bg-slate-100/90 px-3.5 py-1.5 rounded-full text-xs border border-slate-200/70">
-            Developed by <span className="font-extrabold text-indigo-600">QASWARA HASAN</span>
+          <div className="font-semibold text-slate-700 dark:text-slate-300 bg-slate-100/90 dark:bg-slate-800 px-3.5 py-1.5 rounded-full text-xs border border-slate-200/70 dark:border-slate-700">
+            Developed by <span className="font-extrabold text-indigo-600 dark:text-indigo-400">QASWARA HASAN</span>
           </div>
         </div>
       </footer>
@@ -83,9 +84,11 @@ const MainContent: React.FC = () => {
 
 export function App() {
   return (
-    <FactoryProvider>
-      <MainContent />
-    </FactoryProvider>
+    <ThemeProvider>
+      <FactoryProvider>
+        <MainContent />
+      </FactoryProvider>
+    </ThemeProvider>
   );
 }
 

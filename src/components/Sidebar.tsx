@@ -67,16 +67,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab, isOpen
   ];
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-white border-l border-slate-200">
+    <div className="flex flex-col h-full bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 transition-colors">
       {/* Mobile Header inside drawer */}
-      <div className="p-4 border-b border-slate-100 flex items-center justify-between lg:hidden">
+      <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between lg:hidden">
         <div className="flex items-center gap-2">
-          <Factory className="w-5 h-5 text-indigo-600" />
-          <span className="font-bold text-slate-900 text-sm">أقسام المصنع</span>
+          <Factory className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+          <span className="font-bold text-slate-900 dark:text-white text-sm">أقسام المصنع</span>
         </div>
         <button
           onClick={onCloseMobile}
-          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
         >
           <X className="w-5 h-5" />
         </button>
@@ -96,14 +96,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab, isOpen
               }}
               className={`w-full text-right p-3 rounded-2xl transition-all flex items-center justify-between group ${
                 isActive
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 font-bold'
-                  : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 font-medium'
+                  ? 'bg-indigo-600 dark:bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none font-bold'
+                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white font-medium'
               }`}
             >
               <div className="flex items-center gap-3 min-w-0">
                 <div
                   className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
-                    isActive ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600 group-hover:bg-white group-hover:text-indigo-600'
+                    isActive
+                      ? 'bg-white/20 text-white'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 group-hover:bg-white dark:group-hover:bg-slate-700 group-hover:text-indigo-600 dark:group-hover:text-indigo-400'
                   }`}
                 >
                   <Icon className="w-5 h-5" />
@@ -112,7 +114,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab, isOpen
                   <div className="text-sm leading-snug">{item.label}</div>
                   <div
                     className={`text-[11px] truncate ${
-                      isActive ? 'text-indigo-100' : 'text-slate-400 group-hover:text-slate-500'
+                      isActive ? 'text-indigo-100' : 'text-slate-400 dark:text-slate-400 group-hover:text-slate-500 dark:group-hover:text-slate-300'
                     }`}
                   >
                     {item.sub}
@@ -131,11 +133,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab, isOpen
       </nav>
 
       {/* Footer System Status */}
-      <div className="p-4 border-t border-slate-100 bg-slate-50/50">
-        <div className="bg-white rounded-xl p-3 border border-slate-200/60 shadow-xs space-y-1">
-          <div className="text-xs font-bold text-slate-800">مبسمك عندي</div>
-          <div className="text-[11px] text-slate-500">الإصدار 1.0.0</div>
-          <div className="text-[11px] font-extrabold text-indigo-600 border-t border-slate-100 pt-1">
+      <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+        <div className="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200/60 dark:border-slate-700/60 shadow-xs space-y-1">
+          <div className="text-xs font-bold text-slate-800 dark:text-slate-200">مبسمك عندي</div>
+          <div className="text-[11px] text-slate-500 dark:text-slate-400">الإصدار 1.0.0</div>
+          <div className="text-[11px] font-extrabold text-indigo-600 dark:text-indigo-400 border-t border-slate-100 dark:border-slate-700 pt-1">
             Developed by QASWARA HASAN
           </div>
         </div>
