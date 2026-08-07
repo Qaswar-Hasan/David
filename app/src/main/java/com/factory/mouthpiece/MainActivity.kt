@@ -16,6 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.webkit.WebViewAssetLoader
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +40,12 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun FactoryWebView() {
+    var webViewInstance by remember { mutableStateOf<WebView?>(null) }
+
+    BackHandler(enabled = webViewInstance?.canGoBack() == true) {
+        webViewInstance?.goBack()
+    }
+
     AndroidView(
         factory = { context ->
             val assetLoader = WebViewAssetLoader.Builder()
@@ -42,6 +54,7 @@ fun FactoryWebView() {
                 .build()
 
             WebView(context).apply {
+                webViewInstance = this
                 settings.apply {
                     javaScriptEnabled = true
                     domStorageEnabled = true
@@ -63,22 +76,11 @@ fun FactoryWebView() {
                         view: WebView,
                         request: WebResourceRequest
                     ): WebResourceResponse? {
-                        val response = assetLoader.shouldInterceptRequest(request.url)
-                        if (response != null) {
-                            val headers = HashMap(response.responseHeaders ?: emptyMap())
-                            headers["Access-Control-Allow-Origin"] = "*"
-                            headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-                            headers["Access-Control-Allow-Headers"] = "*"
-                            return WebResourceResponse(
-                                response.mimeType,
-                                response.encoding,
-                                response.statusCode,
-                                response.reasonPhrase,
-                                headers,
-                                response.data
-                            )
+                        return try {
+                            assetLoader.shouldInterceptRequest(request.url)
+                        } catch (e: Exception) {
+                            null
                         }
-                        return null
                     }
 
                     override fun onReceivedError(
@@ -88,7 +90,6 @@ fun FactoryWebView() {
                         failingUrl: String?
                     ) {
                         super.onReceivedError(view, errorCode, description, failingUrl)
-                        // Fallback to direct file loading if domain loader fails
                         if (failingUrl?.contains("appassets.androidplatform.net") == true) {
                             view?.loadUrl("file:///android_asset/index.html")
                         }
