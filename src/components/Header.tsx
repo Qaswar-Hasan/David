@@ -1,18 +1,18 @@
 import React from 'react';
-import { Menu, Share2, Factory, RefreshCw } from 'lucide-react';
+import { Menu, FileBarChart2, Factory, RefreshCw } from 'lucide-react';
 import { useFactory } from '../context/FactoryContext';
 
 interface HeaderProps {
   onToggleSidebar: () => void;
-  onOpenReportModal: () => void;
+  onNavigateToReports: () => void;
   activeTabTitle: string;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onOpenReportModal, activeTabTitle }) => {
+export const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigateToReports, activeTabTitle }) => {
   const { resetToDefaultData } = useFactory();
 
   return (
-    <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 py-3 sm:px-6 shadow-xs">
+    <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 py-3 sm:px-6 shadow-xs no-print">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
         {/* Left Side (RTL Start) */}
         <div className="flex items-center gap-3">
@@ -33,7 +33,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onOpenReportMod
                 مصنع المباسم البلاستيكية
               </h1>
               <p className="text-xs text-slate-500 font-medium hidden sm:block">
-                نظام التعبئة والإنتاج ورصد الورديات
+                مبسمك عندي - نظام التعبئة والإنتاج ورصد الورديات
               </p>
             </div>
           </div>
@@ -60,11 +60,11 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onOpenReportMod
           </button>
 
           <button
-            onClick={onOpenReportModal}
+            onClick={onNavigateToReports}
             className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-sm transition-all hover:shadow"
           >
-            <Share2 className="w-4 h-4" />
-            <span className="hidden sm:inline">تصدير التقرير</span>
+            <FileBarChart2 className="w-4 h-4" />
+            <span className="hidden sm:inline">تقرير الإنتاج</span>
             <span className="sm:hidden">تقرير</span>
           </button>
         </div>
@@ -72,3 +72,4 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onOpenReportMod
     </header>
   );
 };
+

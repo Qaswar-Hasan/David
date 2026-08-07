@@ -1,6 +1,8 @@
 package com.factory.mouthpiece
 
 import android.os.Bundle
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -12,6 +14,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.webkit.WebViewAssetLoader
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +36,10 @@ class MainActivity : ComponentActivity() {
 fun FactoryWebView() {
     AndroidView(
         factory = { context ->
+            val assetLoader = WebViewAssetLoader.Builder()
+                .addPathHandler("/", WebViewAssetLoader.AssetsPathHandler(context))
+                .build()
+
             WebView(context).apply {
                 settings.apply {
                     javaScriptEnabled = true
@@ -40,16 +47,29 @@ fun FactoryWebView() {
                     databaseEnabled = true
                     allowFileAccess = true
                     allowContentAccess = true
+                    @Suppress("DEPRECATION")
+                    allowFileAccessFromFileURLs = true
+                    @Suppress("DEPRECATION")
+                    allowUniversalAccessFromFileURLs = true
                     loadWithOverviewMode = true
                     useWideViewPort = true
                     mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                 }
-                webViewClient = WebViewClient()
-                loadUrl("file:///android_asset/index.html")
+                webChromeClient = android.webkit.WebChromeClient()
+                webViewClient = object : WebViewClient() {
+                    override fun shouldInterceptRequest(
+                        view: WebView,
+                        request: WebResourceRequest
+                    ): WebResourceResponse? {
+                        return assetLoader.shouldInterceptRequest(request.url)
+                    }
+                }
+                loadUrl("https://appassets.androidplatform.net/index.html")
             }
         },
         modifier = Modifier.fillMaxSize()
     )
 }
+
 
 

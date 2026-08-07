@@ -16,16 +16,13 @@ import { motion, AnimatePresence } from 'motion/react';
 const MainContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [isSidebarOpenMobile, setIsSidebarOpenMobile] = useState(false);
-  const [showReportModal, setShowReportModal] = useState(false);
-
-  const { generateFormattedArabicReport } = useFactory();
 
   const tabTitles: Record<TabType, string> = {
     dashboard: 'لوحة التحكم المركزية',
     injection: 'قسم آلة الحقن - Module A',
     autoPackaging: 'التغليف الآلي - Module B',
     manualPackaging: 'التعبئة اليدوية (40 مبسم) - Module C',
-    reports: 'التقارير والإحصائيات الشاملة',
+    reports: 'التقارير والإحصائيات الشاملة - مبسمك عندي',
     masterData: 'إدارة البيانات الأساسية',
   };
 
@@ -34,7 +31,7 @@ const MainContent: React.FC = () => {
       {/* Top Header Bar */}
       <Header
         onToggleSidebar={() => setIsSidebarOpenMobile((prev) => !prev)}
-        onOpenReportModal={() => setShowReportModal(true)}
+        onNavigateToReports={() => setActiveTab('reports')}
         activeTabTitle={tabTitles[activeTab]}
       />
 
@@ -67,14 +64,6 @@ const MainContent: React.FC = () => {
           </AnimatePresence>
         </main>
       </div>
-
-      {/* Global Share Report Modal */}
-      {showReportModal && (
-        <ReportShareModal
-          reportText={generateFormattedArabicReport()}
-          onClose={() => setShowReportModal(false)}
-        />
-      )}
     </div>
   );
 };
