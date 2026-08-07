@@ -32,6 +32,27 @@ interface DashboardViewProps {
   onNavigate: (tab: TabType) => void;
 }
 
+// Custom Tooltip for Recharts
+const CustomChartTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div dir="rtl" className="bg-slate-900/95 text-white p-3 rounded-2xl shadow-xl text-xs space-y-1.5 border border-slate-700/50 backdrop-blur-md">
+        <p className="font-bold text-slate-200 border-b border-slate-800/80 pb-1 mb-1">{label}</p>
+        {payload.map((entry: any, index: number) => (
+          <div key={`item-${index}`} className="flex items-center justify-between gap-4">
+            <span className="flex items-center gap-1.5 font-semibold text-slate-300">
+              <span className="w-2.5 h-2.5 rounded-full inline-block shrink-0" style={{ backgroundColor: entry.color }} />
+              {entry.name}:
+            </span>
+            <span className="font-extrabold text-white">{Number(entry.value).toLocaleString('ar-EG')} كجم</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
 export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
   const { analyticsState, injectionRecords, autoPackagingRecords, manualPackagingRecords } = useFactory();
   const [chartType, setChartType] = useState<'bar' | 'area'>('bar');
@@ -277,47 +298,36 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
           </div>
         </div>
 
-        {/* Chart Container */}
-        <div className="h-[320px] w-full pt-2">
+        {/* Chart Container (LTR wrapped to avoid SVG coordinate inversion in RTL) */}
+        <div dir="ltr" className="h-[340px] w-full pt-2 [direction:ltr]">
           <ResponsiveContainer width="100%" height="100%">
             {chartType === 'bar' ? (
-              <BarChart data={dailyData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <BarChart data={dailyData} margin={{ top: 15, right: 15, left: 10, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis
                   dataKey="displayDate"
-                  tick={{ fontSize: 11, fill: '#64748b', fontWeight: 600 }}
+                  tick={{ fontSize: 11, fill: '#475569', fontWeight: 600 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={{ fontSize: 11, fill: '#64748b' }}
+                  tick={{ fontSize: 10, fill: '#64748b', fontWeight: 600 }}
                   axisLine={false}
                   tickLine={false}
-                  unit=" كغ"
+                  width={45}
+                  tickFormatter={(val) => (val >= 1000 ? `${(val / 1000).toFixed(0)}k` : `${val}`)}
                 />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#ffffff',
-                    borderRadius: '16px',
-                    borderColor: '#e2e8f0',
-                    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
-                    direction: 'rtl',
-                    textAlign: 'right',
-                    fontSize: '12px',
-                    fontWeight: 600,
-                  }}
-                  formatter={(value: number) => [`${value} كجم`, '']}
-                />
+                <Tooltip content={<CustomChartTooltip />} />
                 <Legend
-                  wrapperStyle={{ paddingTop: '12px', fontSize: '12px', fontWeight: 600 }}
+                  wrapperStyle={{ paddingTop: '16px', fontSize: '12px', fontWeight: 700 }}
                   iconType="circle"
                 />
-                <Bar dataKey="حقن (كغ)" fill="#4f46e5" radius={[6, 6, 0, 0]} maxBarSize={40} />
-                <Bar dataKey="تغليف آلي (كغ)" fill="#10b981" radius={[6, 6, 0, 0]} maxBarSize={40} />
-                <Bar dataKey="تعبئة يدوية (كغ)" fill="#f59e0b" radius={[6, 6, 0, 0]} maxBarSize={40} />
+                <Bar dataKey="حقن (كغ)" fill="#4f46e5" radius={[6, 6, 0, 0]} maxBarSize={36} />
+                <Bar dataKey="تغليف آلي (كغ)" fill="#10b981" radius={[6, 6, 0, 0]} maxBarSize={36} />
+                <Bar dataKey="تعبئة يدوية (كغ)" fill="#f59e0b" radius={[6, 6, 0, 0]} maxBarSize={36} />
               </BarChart>
             ) : (
-              <AreaChart data={dailyData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <AreaChart data={dailyData} margin={{ top: 15, right: 15, left: 10, bottom: 5 }}>
                 <defs>
                   <linearGradient id="colorInj" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.8} />
@@ -335,38 +345,27 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis
                   dataKey="displayDate"
-                  tick={{ fontSize: 11, fill: '#64748b', fontWeight: 600 }}
+                  tick={{ fontSize: 11, fill: '#475569', fontWeight: 600 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={{ fontSize: 11, fill: '#64748b' }}
+                  tick={{ fontSize: 10, fill: '#64748b', fontWeight: 600 }}
                   axisLine={false}
                   tickLine={false}
-                  unit=" كغ"
+                  width={45}
+                  tickFormatter={(val) => (val >= 1000 ? `${(val / 1000).toFixed(0)}k` : `${val}`)}
                 />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#ffffff',
-                    borderRadius: '16px',
-                    borderColor: '#e2e8f0',
-                    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
-                    direction: 'rtl',
-                    textAlign: 'right',
-                    fontSize: '12px',
-                    fontWeight: 600,
-                  }}
-                  formatter={(value: number) => [`${value} كجم`, '']}
-                />
+                <Tooltip content={<CustomChartTooltip />} />
                 <Legend
-                  wrapperStyle={{ paddingTop: '12px', fontSize: '12px', fontWeight: 600 }}
+                  wrapperStyle={{ paddingTop: '16px', fontSize: '12px', fontWeight: 700 }}
                   iconType="circle"
                 />
                 <Area
                   type="monotone"
                   dataKey="حقن (كغ)"
                   stroke="#4f46e5"
-                  strokeWidth={2}
+                  strokeWidth={2.5}
                   fillOpacity={1}
                   fill="url(#colorInj)"
                 />
@@ -374,7 +373,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
                   type="monotone"
                   dataKey="تغليف آلي (كغ)"
                   stroke="#10b981"
-                  strokeWidth={2}
+                  strokeWidth={2.5}
                   fillOpacity={1}
                   fill="url(#colorAuto)"
                 />
@@ -382,7 +381,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
                   type="monotone"
                   dataKey="تعبئة يدوية (كغ)"
                   stroke="#f59e0b"
-                  strokeWidth={2}
+                  strokeWidth={2.5}
                   fillOpacity={1}
                   fill="url(#colorManual)"
                 />
