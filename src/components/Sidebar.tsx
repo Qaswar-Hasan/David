@@ -69,7 +69,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab, isOpen
   const sidebarContent = (
     <div className="flex flex-col h-full bg-white border-l border-slate-200">
       {/* Mobile Header inside drawer */}
-      <div className="p-4 border-b border-slate-100 flex items-center justify-between md:hidden">
+      <div className="p-4 border-b border-slate-100 flex items-center justify-between lg:hidden">
         <div className="flex items-center gap-2">
           <Factory className="w-5 h-5 text-indigo-600" />
           <span className="font-bold text-slate-900 text-sm">أقسام المصنع</span>
@@ -145,8 +145,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab, isOpen
 
   return (
     <>
-      {/* Tablet & Desktop Persistent Sidebar */}
-      <aside className="hidden md:block w-64 lg:w-72 shrink-0 h-[calc(100vh-61px)] sticky top-[61px]">
+      {/* Desktop Persistent Sidebar */}
+      <aside className="hidden lg:block w-72 shrink-0 h-[calc(100vh-61px)] sticky top-[61px]">
         {sidebarContent}
       </aside>
 
@@ -154,13 +154,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab, isOpen
       {isOpenMobile && (
         <div
           onClick={onCloseMobile}
-          className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-xs md:hidden animate-in fade-in"
+          className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-xs lg:hidden animate-in fade-in"
         />
       )}
 
       {/* Mobile Drawer */}
       <div
-        className={`fixed top-0 bottom-0 right-0 z-50 w-80 bg-white transform transition-transform duration-300 ease-in-out md:hidden shadow-2xl ${
+        className={`fixed top-0 bottom-0 right-0 z-50 w-80 bg-white transform transition-transform duration-300 ease-in-out lg:hidden shadow-2xl ${
           isOpenMobile ? 'translate-x-0' : 'translate-x-full'
         }`}
       >

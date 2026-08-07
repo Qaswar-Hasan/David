@@ -18,7 +18,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigateToRep
         <div className="flex items-center gap-3">
           <button
             onClick={onToggleSidebar}
-            className="md:hidden p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+            className="lg:hidden p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
             aria-label="Toggle menu"
           >
             <Menu className="w-5 h-5" />

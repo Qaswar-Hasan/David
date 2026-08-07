@@ -10,15 +10,26 @@
 }
 
 /* Recharts SVG layout alignment fixes for RTL / Android WebView */
-.recharts-wrapper {
+.recharts-wrapper,
+.recharts-wrapper svg,
+.recharts-surface,
+.recharts-cartesian-grid,
+.recharts-cartesian-axis,
+.recharts-layer {
   direction: ltr !important;
 }
+
 .recharts-legend-wrapper,
-.recharts-tooltip-wrapper {
+.recharts-default-legend,
+.recharts-tooltip-wrapper,
+.recharts-default-tooltip {
   direction: rtl !important;
+  text-align: right !important;
 }
+
 .recharts-cartesian-axis-tick-value {
   font-family: 'Cairo', system-ui, sans-serif !important;
+  direction: ltr !important;
 }
 
 /* Custom Scrollbars for clean design */
