@@ -336,29 +336,28 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
           </div>
         </div>
 
-        {/* Chart Container (LTR wrapped to avoid SVG coordinate inversion in RTL) */}
-        <div dir="ltr" className="h-[340px] w-full pt-2">
+        {/* Chart Container */}
+        <div className="h-[340px] w-full pt-2">
           <ResponsiveContainer width="100%" height="100%">
             {chartType === 'bar' ? (
-              <BarChart data={dailyData} margin={{ top: 15, right: 20, left: 0, bottom: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+              <BarChart data={dailyData} margin={{ top: 15, right: 10, left: -10, bottom: 25 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" className="dark:stroke-slate-800" />
                 <XAxis
                   dataKey="displayDate"
-                  reversed={true}
                   interval={0}
                   angle={-15}
                   textAnchor="end"
                   height={45}
-                  tick={{ fontSize: 10, fill: '#334155', fontWeight: 700 }}
+                  tick={{ fontSize: 11, fill: '#64748b', fontWeight: 700 }}
                   axisLine={false}
                   tickLine={false}
-                  dy={4}
+                  dy={6}
                 />
                 <YAxis
                   tick={{ fontSize: 10, fill: '#64748b', fontWeight: 600 }}
                   axisLine={false}
                   tickLine={false}
-                  width={42}
+                  width={38}
                   tickFormatter={(val) => (val >= 1000 ? `${(val / 1000).toFixed(0)}k` : `${val}`)}
                 />
                 <Tooltip content={<CustomChartTooltip />} />
@@ -371,7 +370,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
                 <Bar dataKey="تعبئة يدوية (كغ)" fill="#f59e0b" radius={[6, 6, 0, 0]} maxBarSize={32} />
               </BarChart>
             ) : (
-              <AreaChart data={dailyData} margin={{ top: 15, right: 20, left: 0, bottom: 20 }}>
+              <AreaChart data={dailyData} margin={{ top: 15, right: 10, left: -10, bottom: 25 }}>
                 <defs>
                   <linearGradient id="colorInj" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.8} />
@@ -386,24 +385,23 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
                     <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.05} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" className="dark:stroke-slate-800" />
                 <XAxis
                   dataKey="displayDate"
-                  reversed={true}
                   interval={0}
                   angle={-15}
                   textAnchor="end"
                   height={45}
-                  tick={{ fontSize: 10, fill: '#334155', fontWeight: 700 }}
+                  tick={{ fontSize: 11, fill: '#64748b', fontWeight: 700 }}
                   axisLine={false}
                   tickLine={false}
-                  dy={4}
+                  dy={6}
                 />
                 <YAxis
                   tick={{ fontSize: 10, fill: '#64748b', fontWeight: 600 }}
                   axisLine={false}
                   tickLine={false}
-                  width={42}
+                  width={38}
                   tickFormatter={(val) => (val >= 1000 ? `${(val / 1000).toFixed(0)}k` : `${val}`)}
                 />
                 <Tooltip content={<CustomChartTooltip />} />
