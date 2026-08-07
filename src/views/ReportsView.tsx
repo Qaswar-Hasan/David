@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useFactory } from '../context/FactoryContext';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import {
   FileBarChart2,
-  Printer,
   Copy,
   Download,
   Users,
@@ -14,12 +15,20 @@ import {
   Award,
   Calendar,
   Layers,
+  Share2,
+  MessageSquare,
+  MessageCircle,
+  Send,
+  Smartphone,
+  Loader2,
 } from 'lucide-react';
 
 export const ReportsView: React.FC = () => {
   const { analyticsState, generateFormattedArabicReport } = useFactory();
   const [periodFilter, setPeriodFilter] = useState<'الكل' | 'أسبوعي' | 'شهري'>('الكل');
   const [copied, setCopied] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [shareSuccess, setShareSuccess] = useState<string | null>(null);
 
   const currentDate = new Date().toLocaleDateString('ar-EG', {
     weekday: 'long',
@@ -30,8 +39,70 @@ export const ReportsView: React.FC = () => {
 
   const reportId = `REP-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}`;
 
-  const handlePrintPdf = () => {
-    window.print();
+  // Direct PDF File Generation via html2canvas & jsPDF with multi-page slicing
+  const handleDownloadPdf = async () => {
+    const element = document.getElementById('printable-report-sheet');
+    if (!element) {
+      return;
+    }
+
+    try {
+      setIsGeneratingPdf(true);
+      window.scrollTo(0, 0);
+
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+        windowWidth: 1200,
+        scrollX: 0,
+        scrollY: 0,
+        onclone: (clonedDoc) => {
+          const el = clonedDoc.getElementById('printable-report-sheet');
+          if (el) {
+            el.style.letterSpacing = 'normal';
+            el.style.wordSpacing = 'normal';
+            const allNodes = el.querySelectorAll('*');
+            allNodes.forEach((node) => {
+              const htmlNode = node as HTMLElement;
+              htmlNode.style.letterSpacing = 'normal';
+              htmlNode.style.wordSpacing = 'normal';
+            });
+          }
+        },
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+
+      const imgWidth = 210; // A4 width in mm
+      const pageHeight = 297; // A4 height in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      // Add First Page
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+      heightLeft -= pageHeight;
+
+      // Loop to add subsequent pages if report exceeds 1 A4 page length
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+        heightLeft -= pageHeight;
+      }
+
+      pdf.save(`تقرير_مصنع_المباسم_مبسمك_عندي_${new Date().toISOString().split('T')[0]}.pdf`);
+      
+      setShareSuccess('تم تحميل ملف PDF المكتمل بنجاح');
+      setTimeout(() => setShareSuccess(null), 3000);
+    } catch (err) {
+      console.error('PDF Generation error:', err);
+    } finally {
+      setIsGeneratingPdf(false);
+    }
   };
 
   const handleCopyText = () => {
@@ -40,41 +111,104 @@ export const ReportsView: React.FC = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleDownloadTxt = () => {
-    const reportText = generateFormattedArabicReport();
-    const blob = new Blob([reportText], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `تقرير_مصنع_المباسم_${new Date().toISOString().split('T')[0]}.txt`;
-    link.click();
-    URL.revokeObjectURL(url);
+  // Social Sharing Handlers
+  const reportText = generateFormattedArabicReport();
+
+  const shareToWhatsApp = () => {
+    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(reportText)}`;
+    window.open(url, '_blank');
+  };
+
+  const shareToTelegram = () => {
+    const url = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(reportText)}`;
+    window.open(url, '_blank');
+  };
+
+  const shareToSms = () => {
+    const url = `sms:?body=${encodeURIComponent(reportText)}`;
+    window.location.href = url;
+  };
+
+  const shareToMessenger = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'تقرير مصنع المباسم - مبسمك عندي',
+          text: reportText,
+        });
+        setShareSuccess('تمت المشاركة بنجاح');
+        setTimeout(() => setShareSuccess(null), 3000);
+        return;
+      } catch (e) {
+        // user cancelled or share failed
+      }
+    }
+    // Fallback URL for Messenger / Web
+    const url = `https://www.facebook.com/dialog/send?link=${encodeURIComponent(window.location.href)}&app_id=291494419107518&redirect_uri=${encodeURIComponent(window.location.href)}`;
+    window.open(url, '_blank');
+  };
+
+  const shareNativeSystem = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'تقرير مصنع المباسم - مبسمك عندي',
+          text: reportText,
+        });
+        setShareSuccess('تمت المشاركة بنجاح');
+        setTimeout(() => setShareSuccess(null), 3000);
+      } catch (e) {
+        handleCopyText();
+      }
+    } else {
+      handleCopyText();
+    }
   };
 
   return (
     <div className="space-y-6 pb-16 max-w-5xl mx-auto">
+      {/* Notification toast */}
+      {shareSuccess && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-2 text-sm font-bold animate-bounce">
+          <Check className="w-5 h-5 text-emerald-400" />
+          <span>{shareSuccess}</span>
+        </div>
+      )}
+
       {/* Top Controls Toolbar (Hidden during print) */}
-      <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs space-y-4 no-print">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs space-y-5 no-print">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 to-indigo-700 text-white flex items-center justify-center font-bold shadow-sm">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 to-indigo-700 text-white flex items-center justify-center font-bold shadow-sm shrink-0">
               <FileBarChart2 className="w-6 h-6" />
             </div>
             <div>
               <h2 className="text-xl font-extrabold text-slate-900">صفحة التقارير والطباعة الرسمية</h2>
-              <p className="text-xs text-slate-500 font-medium">مبسمك عندي - تصدير تقارير الإنتاج والحسابات كملف PDF احترافي</p>
+              <p className="text-xs text-slate-500 font-medium">مبسمك عندي - تصدير تقارير الإنتاج والمشاركة الفورية</p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
+            {/* Download PDF Button */}
             <button
-              onClick={handlePrintPdf}
-              className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 shadow-md shadow-indigo-200 transition-all hover:scale-[1.02]"
+              onClick={handleDownloadPdf}
+              disabled={isGeneratingPdf}
+              className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 shadow-md shadow-emerald-200 transition-all hover:scale-[1.02] disabled:opacity-60"
             >
-              <Printer className="w-4 h-4" />
-              <span>تحميل / طباعة كملف PDF</span>
+              {isGeneratingPdf ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>جاري إنشاء PDF...</span>
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4" />
+                  <span>تحميل كملف PDF</span>
+                </>
+              )}
             </button>
 
+            {/* Copy Text Button */}
             <button
               onClick={handleCopyText}
               className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors"
@@ -83,20 +217,66 @@ export const ReportsView: React.FC = () => {
               {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-slate-500" />}
               <span>{copied ? 'تم النسخ' : 'نسخ النص'}</span>
             </button>
+          </div>
+        </div>
 
+        {/* Social Share Bar */}
+        <div className="pt-4 border-t border-slate-100 space-y-3">
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
+            <Share2 className="w-4 h-4 text-indigo-600" />
+            <span>مشاركة التقرير عبر تطبيقات التواصل:</span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+            {/* WhatsApp */}
             <button
-              onClick={handleDownloadTxt}
-              className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors"
-              title="تحميل كملف نصي"
+              onClick={shareToWhatsApp}
+              className="p-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
             >
-              <Download className="w-4 h-4 text-slate-500" />
-              <span>ملف نصي</span>
+              <MessageSquare className="w-4 h-4 text-emerald-600" />
+              <span>واتساب</span>
+            </button>
+
+            {/* Telegram */}
+            <button
+              onClick={shareToTelegram}
+              className="p-2.5 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200/80 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
+            >
+              <Send className="w-4 h-4 text-sky-600" />
+              <span>تلغرام</span>
+            </button>
+
+            {/* Messenger */}
+            <button
+              onClick={shareToMessenger}
+              className="p-2.5 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200/80 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
+            >
+              <MessageCircle className="w-4 h-4 text-blue-600" />
+              <span>ماسنجر</span>
+            </button>
+
+            {/* SMS */}
+            <button
+              onClick={shareToSms}
+              className="p-2.5 bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200/80 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
+            >
+              <Smartphone className="w-4 h-4 text-purple-600" />
+              <span>رسائل SMS</span>
+            </button>
+
+            {/* Native Share */}
+            <button
+              onClick={shareNativeSystem}
+              className="col-span-2 sm:col-span-1 p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
+            >
+              <Share2 className="w-4 h-4 text-slate-600" />
+              <span>مشاركة عامة</span>
             </button>
           </div>
         </div>
 
         {/* Filter Period Chips */}
-        <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
+        <div className="flex items-center gap-2 pt-3 border-t border-slate-100">
           <span className="text-xs font-bold text-slate-500 ml-2">الفترة الزمنية:</span>
           {(['الكل', 'أسبوعي', 'شهري'] as const).map((filter) => (
             <button
@@ -115,7 +295,10 @@ export const ReportsView: React.FC = () => {
       </div>
 
       {/* Main Printable Formal PDF Document Sheet */}
-      <div className="print-page bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-xl space-y-8 relative overflow-hidden dir-rtl">
+      <div
+        id="printable-report-sheet"
+        className="print-page bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-xl space-y-8 relative overflow-hidden dir-rtl"
+      >
         {/* Document Header Banner */}
         <div className="border-b-2 border-indigo-600 pb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -124,7 +307,7 @@ export const ReportsView: React.FC = () => {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-black text-slate-900 tracking-tight">مصنع المباسم البلاستيكية</h1>
+                <h1 className="text-2xl font-black text-slate-900 tracking-normal">مصنع المباسم البلاستيكية</h1>
                 <span className="px-2.5 py-0.5 bg-indigo-100 text-indigo-800 text-xs font-black rounded-md border border-indigo-200">
                   مبسمك عندي
                 </span>
@@ -153,7 +336,7 @@ export const ReportsView: React.FC = () => {
 
         {/* Executive Summary Metrics Grid */}
         <div className="space-y-3">
-          <h3 className="text-sm font-black text-slate-800 flex items-center gap-2 uppercase tracking-wide">
+          <h3 className="text-sm font-black text-slate-800 flex items-center gap-2 tracking-normal">
             <Award className="w-4 h-4 text-indigo-600" />
             ملخص المؤشرات الرئيسية للإنتاج
           </h3>
@@ -162,28 +345,28 @@ export const ReportsView: React.FC = () => {
             <div className="p-3.5 bg-indigo-50/80 rounded-2xl border border-indigo-100">
               <span className="text-[11px] font-bold text-indigo-700 block">صافي إنتاج الحقن</span>
               <span className="text-lg sm:text-xl font-black text-indigo-900 mt-0.5 block">
-                {analyticsState.totalInjectionFinishedKg.toFixed(2)} <span className="text-xs font-medium">كغ</span>
+                {(analyticsState?.totalInjectionFinishedKg ?? 0).toFixed(2)} <span className="text-xs font-medium">كغ</span>
               </span>
             </div>
 
             <div className="p-3.5 bg-blue-50/80 rounded-2xl border border-blue-100">
               <span className="text-[11px] font-bold text-blue-700 block">وزن التغليف الآلي</span>
               <span className="text-lg sm:text-xl font-black text-blue-900 mt-0.5 block">
-                {analyticsState.totalAutoPackagingKg.toFixed(2)} <span className="text-xs font-medium">كغ</span>
+                {(analyticsState?.totalAutoPackKg ?? 0).toFixed(2)} <span className="text-xs font-medium">كغ</span>
               </span>
             </div>
 
             <div className="p-3.5 bg-amber-50/80 rounded-2xl border border-amber-100">
               <span className="text-[11px] font-bold text-amber-800 block">التعبئة اليدوية (40 مبسم)</span>
               <span className="text-lg sm:text-xl font-black text-amber-900 mt-0.5 block">
-                {analyticsState.totalManualPackagingKg.toFixed(2)} <span className="text-xs font-medium">كغ</span>
+                {(analyticsState?.totalManualPackKg ?? 0).toFixed(2)} <span className="text-xs font-medium">كغ</span>
               </span>
             </div>
 
             <div className="p-3.5 bg-emerald-50/80 rounded-2xl border border-emerald-100">
               <span className="text-[11px] font-bold text-emerald-800 block">إجمالي عدد الأكياس</span>
               <span className="text-lg sm:text-xl font-black text-emerald-900 mt-0.5 block">
-                {analyticsState.totalManualBagsCount} <span className="text-xs font-medium">كيس</span>
+                {analyticsState?.totalManualBagsCount ?? 0} <span className="text-xs font-medium">كيس</span>
               </span>
             </div>
           </div>
@@ -218,9 +401,9 @@ export const ReportsView: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-semibold text-slate-700">
-                  {analyticsState.clientSummaries.map((c) => {
-                    const totalWeight = analyticsState.totalManualPackagingKg || 1;
-                    const pct = ((c.totalNetMouthpiecesWeightKg / totalWeight) * 100).toFixed(1);
+                  {analyticsState?.clientSummaries?.map((c) => {
+                    const totalWeight = analyticsState?.totalManualPackKg || 1;
+                    const pct = (((c?.totalNetMouthpiecesWeightKg ?? 0) / totalWeight) * 100).toFixed(1);
                     return (
                       <tr key={c.clientId} className="hover:bg-slate-50">
                         <td className="p-3 font-bold text-slate-900">{c.clientName}</td>
@@ -229,8 +412,8 @@ export const ReportsView: React.FC = () => {
                             {c.totalBagsCount} كيس
                           </span>
                         </td>
-                        <td className="p-3">{c.totalMouthpiecesCount.toLocaleString('ar-EG')} مبسم</td>
-                        <td className="p-3 font-bold text-emerald-700">{c.totalNetMouthpiecesWeightKg.toFixed(2)} كغ</td>
+                        <td className="p-3">{(c?.totalMouthpiecesCount ?? 0).toLocaleString('ar-EG')} مبسم</td>
+                        <td className="p-3 font-bold text-emerald-700">{(c?.totalNetMouthpiecesWeightKg ?? 0).toFixed(2)} كغ</td>
                         <td className="p-3 font-mono text-slate-600">{pct}%</td>
                       </tr>
                     );
@@ -293,21 +476,21 @@ export const ReportsView: React.FC = () => {
             <div className="p-3 bg-white rounded-xl border border-slate-200">
               <span className="text-slate-500 font-medium block">هدر مواد الحقن الأولية:</span>
               <span className="text-base font-black text-rose-600 mt-1 block">
-                {analyticsState.totalInjectionWasteKg.toFixed(2)} كغ
+                {(analyticsState?.totalInjectionWasteKg ?? 0).toFixed(2)} كغ
               </span>
             </div>
 
             <div className="p-3 bg-white rounded-xl border border-slate-200">
               <span className="text-slate-500 font-medium block">فاقد وزن التعبئة اليدوية:</span>
               <span className="text-base font-black text-rose-600 mt-1 block">
-                {analyticsState.totalPackagingLossKg.toFixed(2)} كغ
+                {(analyticsState?.totalPackagingLossKg ?? 0).toFixed(2)} كغ
               </span>
             </div>
 
             <div className="p-3 bg-white rounded-xl border border-slate-200">
               <span className="text-slate-500 font-medium block">كفاءة إنتاجية الحقن العامة:</span>
               <span className="text-base font-black text-indigo-700 mt-1 block">
-                {analyticsState.avgInjectionYieldPct.toFixed(1)}%
+                {(analyticsState?.avgInjectionYieldPct ?? 0).toFixed(1)}%
               </span>
             </div>
           </div>

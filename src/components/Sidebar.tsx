@@ -6,11 +6,12 @@ import {
   ShoppingBag,
   FileBarChart2,
   Database,
+  Info,
   X,
   ChevronLeft,
 } from 'lucide-react';
 
-export type TabType = 'dashboard' | 'injection' | 'autoPackaging' | 'manualPackaging' | 'reports' | 'masterData';
+export type TabType = 'dashboard' | 'injection' | 'autoPackaging' | 'manualPackaging' | 'reports' | 'masterData' | 'about';
 
 interface SidebarProps {
   activeTab: TabType;
@@ -56,6 +57,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab, isOpen
       label: 'البيانات الأساسية',
       sub: 'العملاء، الآلات، الورديات، العمال',
       icon: Database,
+    },
+    {
+      id: 'about',
+      label: 'عن التطبيق',
+      sub: 'المطور والمعلومات - قسورة حسن',
+      icon: Info,
     },
   ];
 
@@ -125,9 +132,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab, isOpen
 
       {/* Footer System Status */}
       <div className="p-4 border-t border-slate-100 bg-slate-50/50">
-        <div className="bg-white rounded-xl p-3 border border-slate-200/60 shadow-xs">
-          <div className="text-xs font-bold text-slate-800">مصنع المباسم البلاستيكية</div>
-          <div className="text-[11px] text-slate-500 mt-0.5">الإصدار 1.0.0 • تشغيل محلي</div>
+        <div className="bg-white rounded-xl p-3 border border-slate-200/60 shadow-xs space-y-1">
+          <div className="text-xs font-bold text-slate-800">مبسمك عندي</div>
+          <div className="text-[11px] text-slate-500">الإصدار 1.0.0</div>
+          <div className="text-[11px] font-extrabold text-indigo-600 border-t border-slate-100 pt-1">
+            Developed by QASWARA HASAN
+          </div>
         </div>
       </div>
     </div>

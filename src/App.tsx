@@ -10,6 +10,7 @@ import { AutoPackagingView } from './views/AutoPackagingView';
 import { ManualPackagingView } from './views/ManualPackagingView';
 import { ReportsView } from './views/ReportsView';
 import { MasterDataView } from './views/MasterDataView';
+import { AboutView } from './views/AboutView';
 
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -24,6 +25,7 @@ const MainContent: React.FC = () => {
     manualPackaging: 'التعبئة اليدوية (40 مبسم) - Module C',
     reports: 'التقارير والإحصائيات الشاملة - مبسمك عندي',
     masterData: 'إدارة البيانات الأساسية',
+    about: 'عن التطبيق - مبسمك عندي',
   };
 
   return (
@@ -60,10 +62,21 @@ const MainContent: React.FC = () => {
               {activeTab === 'manualPackaging' && <ManualPackagingView />}
               {activeTab === 'reports' && <ReportsView />}
               {activeTab === 'masterData' && <MasterDataView />}
+              {activeTab === 'about' && <AboutView />}
             </motion.div>
           </AnimatePresence>
         </main>
       </div>
+
+      {/* Global App Footer */}
+      <footer className="mt-auto py-5 border-t border-slate-200/80 bg-white text-center text-xs text-slate-500 font-medium no-print">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div>مبسمك عندي - نظام إدارة مصنع المباسم البلاستيكية © {new Date().getFullYear()}</div>
+          <div className="font-semibold text-slate-700 bg-slate-100/90 px-3.5 py-1.5 rounded-full text-xs border border-slate-200/70">
+            Developed by <span className="font-extrabold text-indigo-600">QASWARA HASAN</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
