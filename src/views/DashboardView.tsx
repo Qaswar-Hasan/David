@@ -35,9 +35,10 @@ interface DashboardViewProps {
 // Custom Tooltip for Recharts
 const CustomChartTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
+    const titleLabel = payload[0]?.payload?.fullDateLabel || label;
     return (
       <div dir="rtl" className="bg-slate-900/95 text-white p-3 rounded-2xl shadow-xl text-xs space-y-1.5 border border-slate-700/50 backdrop-blur-md">
-        <p className="font-bold text-slate-200 border-b border-slate-800/80 pb-1 mb-1">{label}</p>
+        <p className="font-bold text-indigo-200 border-b border-slate-800/80 pb-1 mb-1">{titleLabel}</p>
         {payload.map((entry: any, index: number) => (
           <div key={`item-${index}`} className="flex items-center justify-between gap-4">
             <span className="flex items-center gap-1.5 font-semibold text-slate-300">
@@ -70,12 +71,22 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
   const getDisplayDate = (dateStr: string) => {
     const parts = dateStr.split('-');
     if (parts.length === 3) {
+      const month = parseInt(parts[1], 10);
+      const day = parseInt(parts[2], 10);
+      return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}`;
+    }
+    return dateStr;
+  };
+
+  const getFullDateLabel = (dateStr: string) => {
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
       const year = parseInt(parts[0], 10);
       const month = parseInt(parts[1], 10) - 1;
       const day = parseInt(parts[2], 10);
       const d = new Date(year, month, day);
       const monthName = d.toLocaleDateString('ar-EG', { month: 'short' });
-      return `${day} ${monthName}`;
+      return `${day} ${monthName} ${year}`;
     }
     return dateStr;
   };
@@ -87,6 +98,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
       {
         date: string;
         displayDate: string;
+        fullDateLabel: string;
         injectionKg: number;
         autoPackKg: number;
         manualPackKg: number;
@@ -102,9 +114,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
       d.setDate(d.getDate() - i);
       const dateStr = formatLocalDateString(d);
       const displayDate = getDisplayDate(dateStr);
+      const fullDateLabel = getFullDateLabel(dateStr);
       dateMap[dateStr] = {
         date: dateStr,
         displayDate,
+        fullDateLabel,
         injectionKg: 0,
         autoPackKg: 0,
         manualPackKg: 0,
@@ -115,7 +129,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
     injectionRecords.forEach((r) => {
       if (!dateMap[r.date]) {
         const displayDate = getDisplayDate(r.date);
-        dateMap[r.date] = { date: r.date, displayDate, injectionKg: 0, autoPackKg: 0, manualPackKg: 0 };
+        const fullDateLabel = getFullDateLabel(r.date);
+        dateMap[r.date] = { date: r.date, displayDate, fullDateLabel, injectionKg: 0, autoPackKg: 0, manualPackKg: 0 };
       }
       dateMap[r.date].injectionKg += r.finishedMouthpiecesWeightKg;
     });
@@ -124,7 +139,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
     autoPackagingRecords.forEach((r) => {
       if (!dateMap[r.date]) {
         const displayDate = getDisplayDate(r.date);
-        dateMap[r.date] = { date: r.date, displayDate, injectionKg: 0, autoPackKg: 0, manualPackKg: 0 };
+        const fullDateLabel = getFullDateLabel(r.date);
+        dateMap[r.date] = { date: r.date, displayDate, fullDateLabel, injectionKg: 0, autoPackKg: 0, manualPackKg: 0 };
       }
       dateMap[r.date].autoPackKg += r.netShiftWeightKg;
     });
@@ -133,7 +149,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
     manualPackagingRecords.forEach((r) => {
       if (!dateMap[r.date]) {
         const displayDate = getDisplayDate(r.date);
-        dateMap[r.date] = { date: r.date, displayDate, injectionKg: 0, autoPackKg: 0, manualPackKg: 0 };
+        const fullDateLabel = getFullDateLabel(r.date);
+        dateMap[r.date] = { date: r.date, displayDate, fullDateLabel, injectionKg: 0, autoPackKg: 0, manualPackKg: 0 };
       }
       dateMap[r.date].manualPackKg += r.netMouthpiecesWeightKg;
     });
@@ -142,6 +159,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
       .sort((a, b) => a.date.localeCompare(b.date))
       .map((item) => ({
         displayDate: item.displayDate,
+        fullDateLabel: item.fullDateLabel,
         'حقن (كغ)': Number(item.injectionKg.toFixed(1)),
         'تغليف آلي (كغ)': Number(item.autoPackKg.toFixed(1)),
         'تعبئة يدوية (كغ)': Number(item.manualPackKg.toFixed(1)),
@@ -319,23 +337,24 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
         </div>
 
         {/* Chart Container (LTR wrapped to avoid SVG coordinate inversion in RTL) */}
-        <div dir="ltr" className="h-[340px] w-full pt-2 [direction:ltr]">
+        <div dir="ltr" className="h-[340px] w-full pt-2">
           <ResponsiveContainer width="100%" height="100%">
             {chartType === 'bar' ? (
-              <BarChart data={dailyData} margin={{ top: 15, right: 5, left: -15, bottom: 5 }}>
+              <BarChart data={dailyData} margin={{ top: 15, right: 20, left: 0, bottom: 15 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis
                   dataKey="displayDate"
                   interval={0}
-                  tick={{ fontSize: 9, fill: '#475569', fontWeight: 700 }}
+                  tick={{ fontSize: 11, fill: '#334155', fontWeight: 700 }}
                   axisLine={false}
                   tickLine={false}
+                  dy={6}
                 />
                 <YAxis
                   tick={{ fontSize: 10, fill: '#64748b', fontWeight: 600 }}
                   axisLine={false}
                   tickLine={false}
-                  width={38}
+                  width={42}
                   tickFormatter={(val) => (val >= 1000 ? `${(val / 1000).toFixed(0)}k` : `${val}`)}
                 />
                 <Tooltip content={<CustomChartTooltip />} />
@@ -348,7 +367,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
                 <Bar dataKey="تعبئة يدوية (كغ)" fill="#f59e0b" radius={[6, 6, 0, 0]} maxBarSize={32} />
               </BarChart>
             ) : (
-              <AreaChart data={dailyData} margin={{ top: 15, right: 5, left: -15, bottom: 5 }}>
+              <AreaChart data={dailyData} margin={{ top: 15, right: 20, left: 0, bottom: 15 }}>
                 <defs>
                   <linearGradient id="colorInj" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.8} />
@@ -367,15 +386,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
                 <XAxis
                   dataKey="displayDate"
                   interval={0}
-                  tick={{ fontSize: 9, fill: '#475569', fontWeight: 700 }}
+                  tick={{ fontSize: 11, fill: '#334155', fontWeight: 700 }}
                   axisLine={false}
                   tickLine={false}
+                  dy={6}
                 />
                 <YAxis
                   tick={{ fontSize: 10, fill: '#64748b', fontWeight: 600 }}
                   axisLine={false}
                   tickLine={false}
-                  width={38}
+                  width={42}
                   tickFormatter={(val) => (val >= 1000 ? `${(val / 1000).toFixed(0)}k` : `${val}`)}
                 />
                 <Tooltip content={<CustomChartTooltip />} />
